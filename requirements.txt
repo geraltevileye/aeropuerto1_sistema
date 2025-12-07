@@ -4,4 +4,4 @@ gunicorn==21.2.0
 pandas==2.3.3
 python-dotenv==1.0.0
 mysql-connector-python==8.1.0
-psycopg[binary]==3.2.4  # ¡Cambia psycopg2 por psycopg3!
+psycopg2-binary==2.9.11  # ¡Versión compatible con Python 3.13!
