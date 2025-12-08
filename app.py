@@ -311,18 +311,18 @@ def agregar_pasajero():
     nombre = request.form['nombre']
     apellidos = request.form['apellidos']
     pasaporte = request.form['pasaporte']
-    nacionalidad = request.form['nacionalidad']
+    vuelo = request.form['vuelo']
     vuelo = request.form['vuelo'] if request.form['vuelo'] else None
     correo = request.form['correo']
     telefono = request.form['telefono']
-    
+     
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
         cursor.execute('''
-            INSERT INTO Pasajeros (nombre, apellidos, pasaporte, nacionalidad, vuelo, correo, telefono)
+            INSERT INTO Pasajeros (nombre, apellidos, pasaporte, vuelo, vuelo, correo, telefono)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
-        ''', (nombre, apellidos, pasaporte, nacionalidad, vuelo, correo, telefono))
+        ''', (nombre, apellidos, pasaporte, vuelo, vuelo, correo, telefono))
         conn.commit()
         
         log_operacion('ALTA', 'Pasajeros', pasaporte, f'Pasajero agregado: {nombre} {apellidos}')
@@ -342,7 +342,7 @@ def editar_pasajero(id):
     nombre = request.form['nombre']
     apellidos = request.form['apellidos']
     pasaporte = request.form['pasaporte']
-    nacionalidad = request.form['nacionalidad']
+    vuelo= request.form['vuelo']
     vuelo= request.form['vuelo'] if request.form['vuelo'] else None
     correo = request.form['correo']
     telefono = request.form['telefono']
@@ -352,7 +352,7 @@ def editar_pasajero(id):
     try:
         cursor.execute('''
             UPDATE Pasajeros 
-            SET nombre = %s, apellidos = %s, pasaporte = %s, nacionalidad = %s, 
+            SET nombre = %s, apellidos = %s, pasaporte = %s, vuelo = %s, 
                 vuelo= %s, correo = %s, telefono = %s
             WHERE id_pasajero = %s
         ''', (nombre, apellidos, pasaporte, nacionalidad, vuelo, correo, telefono, id))
