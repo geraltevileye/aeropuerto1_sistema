@@ -104,8 +104,8 @@
                                             <input type="text" name="pasaporte" class="form-control" value="{{ pasajero.pasaporte }}" required>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Nacionalidad:</label>
-                                            <input type="text" name="nacionalidad" class="form-control" value="{{ pasajero.vuelo or '' }}">
+                                            <label class="form-label">vuelo:</label>
+                                            <input type="text" name="vuelo" class="form-control" value="{{ pasajero.vuelo or '' }}">
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Fecha de Nacimiento:</label>
@@ -171,7 +171,7 @@
                         <label class="form-label">Fecha de Nacimiento:</label>
                         <input type="date" name="fecha_nacimiento" class="form-control">
                     </div>
-                    <div class="mb-3" 
+                    <div class="mb-3" >
                         <label class="form-label">Correo Electrónico:</label>
                         <input type="email" name="correo" class="form-control">
                     </div>
