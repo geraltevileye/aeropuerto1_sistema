@@ -312,7 +312,7 @@ def agregar_pasajero():
     apellidos = request.form['apellidos']
     pasaporte = request.form['pasaporte']
     nacionalidad = request.form['nacionalidad']
-    fecha_nacimiento = request.form['fecha_nacimiento'] if request.form['fecha_nacimiento'] else None
+    vuelo = request.form['fecha_nacimiento'] if request.form['fecha_nacimiento'] else None
     correo = request.form['correo']
     telefono = request.form['telefono']
     
@@ -322,7 +322,7 @@ def agregar_pasajero():
         cursor.execute('''
             INSERT INTO Pasajeros (nombre, apellidos, pasaporte, nacionalidad, fecha_nacimiento, correo, telefono)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
-        ''', (nombre, apellidos, pasaporte, nacionalidad, fecha_nacimiento, correo, telefono))
+        ''', (nombre, apellidos, pasaporte, nacionalidad, vuelo, correo, telefono))
         conn.commit()
         
         log_operacion('ALTA', 'Pasajeros', pasaporte, f'Pasajero agregado: {nombre} {apellidos}')
@@ -343,7 +343,7 @@ def editar_pasajero(id):
     apellidos = request.form['apellidos']
     pasaporte = request.form['pasaporte']
     nacionalidad = request.form['nacionalidad']
-    fecha_nacimiento = request.form['fecha_nacimiento'] if request.form['fecha_nacimiento'] else None
+    vuelo= request.form['fecha_nacimiento'] if request.form['fecha_nacimiento'] else None
     correo = request.form['correo']
     telefono = request.form['telefono']
     
@@ -353,9 +353,9 @@ def editar_pasajero(id):
         cursor.execute('''
             UPDATE Pasajeros 
             SET nombre = %s, apellidos = %s, pasaporte = %s, nacionalidad = %s, 
-                fecha_nacimiento = %s, correo = %s, telefono = %s
+                vuelo= %s, correo = %s, telefono = %s
             WHERE id_pasajero = %s
-        ''', (nombre, apellidos, pasaporte, nacionalidad, fecha_nacimiento, correo, telefono, id))
+        ''', (nombre, apellidos, pasaporte, nacionalidad, vuelo, correo, telefono, id))
         conn.commit()
         
         log_operacion('EDICION', 'Pasajeros', id, f'Pasajero actualizado: {nombre} {apellidos}')
