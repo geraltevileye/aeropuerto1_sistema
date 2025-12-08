@@ -118,13 +118,13 @@ try:
     ]
     
     pasajeros_agregados = 0
-    for nombre, apellidos, pasaporte, nacionalidad, fecha_nac, correo, telefono in pasajeros:
+    for nombre, apellidos, pasaporte, nacionalidad, vuelo, correo, telefono in pasajeros:
         try:
             cursor.execute('''
                 INSERT INTO Pasajeros (nombre, apellidos, pasaporte, nacionalidad, fecha_nacimiento, correo, telefono)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (pasaporte) DO NOTHING
-            ''', (nombre, apellidos, pasaporte, nacionalidad, fecha_nac, correo, telefono))
+            ''', (nombre, apellidos, pasaporte, nacionalidad, vuelo, correo, telefono))
             pasajeros_agregados += 1
         except:
             pass
