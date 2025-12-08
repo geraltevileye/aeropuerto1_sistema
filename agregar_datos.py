@@ -87,12 +87,12 @@ try:
         ('Olivia', 'Brown', 'UK678901', 'Británica', '1998-01-05', 'olivia.brown@email.com', '555-1010')
     ]
     
-    for nombre, apellidos, pasaporte, nacionalidad, fecha_nac, correo, telefono in pasajeros:
+    for nombre, apellidos, pasaporte, nacionalidad, vuelo, correo, telefono in pasajeros:
         cursor.execute('''
-            INSERT INTO Pasajeros (nombre, apellidos, pasaporte, nacionalidad, fecha_nacimiento, correo, telefono)
+            INSERT INTO Pasajeros (nombre, apellidos, pasaporte, nacionalidad, vuelo, correo, telefono)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (pasaporte) DO NOTHING
-        ''', (nombre, apellidos, pasaporte, nacionalidad, fecha_nac, correo, telefono))
+        ''', (nombre, apellidos, pasaporte, nacionalidad, vuelo, correo, telefono))
     
     print("   ✅ 10 pasajeros agregados")
     
