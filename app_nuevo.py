@@ -295,7 +295,7 @@ def agregar_pasajero():
     apellidos = request.form['apellidos']
     pasaporte = request.form['pasaporte']
     nacionalidad = request.form['nacionalidad']
-    fecha_nacimiento = request.form['fecha_nacimiento'] if request.form['fecha_nacimiento'] else None
+    vuelo= request.form['vuelo'] if request.form['vuelo'] else None
     correo = request.form['correo']
     telefono = request.form['telefono']
     
@@ -303,9 +303,9 @@ def agregar_pasajero():
     cursor = conn.cursor()
     try:
         cursor.execute('''
-            INSERT INTO Pasajeros (nombre, apellidos, pasaporte, nacionalidad, fecha_nacimiento, correo, telefono)
+            INSERT INTO Pasajeros (nombre, apellidos, pasaporte, nacionalidad, vuelo, correo, telefono)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
-        ''', (nombre, apellidos, pasaporte, nacionalidad, fecha_nacimiento, correo, telefono))
+        ''', (nombre, apellidos, pasaporte, nacionalidad, vuelo, correo, telefono))
         conn.commit()
         
         log_operacion('ALTA', 'Pasajeros', pasaporte, f'Pasajero agregado: {nombre} {apellidos}')
