@@ -343,7 +343,7 @@ def editar_pasajero(id):
     apellidos = request.form['apellidos']
     pasaporte = request.form['pasaporte']
     nacionalidad = request.form['nacionalidad']
-    vuelo= request.form['fecha_nacimiento'] if request.form['fecha_nacimiento'] else None
+    vuelo= request.form['vuelo'] if request.form['vuelo'] else None
     correo = request.form['correo']
     telefono = request.form['telefono']
     
