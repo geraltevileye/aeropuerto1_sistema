@@ -27,7 +27,7 @@ CREATE TABLE Pasajeros (
     apellidos VARCHAR(100) NOT NULL,
     pasaporte VARCHAR(20) UNIQUE NOT NULL,
     vuelo VARCHAR(50),
-    vuelo DATE,
+   FechNac DATE,
     correo VARCHAR(100),
     telefono VARCHAR(20)
 );
