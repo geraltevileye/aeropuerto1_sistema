@@ -59,7 +59,7 @@ try:
             apellidos VARCHAR(100) NOT NULL,
             pasaporte VARCHAR(20) UNIQUE NOT NULL,
             nacionalidad VARCHAR(50),
-            fecha_nacimiento DATE,
+            vuelo DATE,
             correo VARCHAR(100),
             telefono VARCHAR(20)
         )
