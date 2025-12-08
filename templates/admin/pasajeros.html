@@ -46,7 +46,7 @@
                         <th>Nombre</th>
                         <th>Apellidos</th>
                         <th>Pasaporte</th>
-                        <th>Nacionalidad</th>
+                        <th>vuelo</th>
                         <th>Fecha Nac.</th>
                         <th>Contacto</th>
                         <th>Acciones</th>
@@ -59,7 +59,7 @@
                         <td>{{ pasajero.nombre }}</td>
                         <td>{{ pasajero.apellidos }}</td>
                         <td><code>{{ pasajero.pasaporte }}</code></td>
-                        <td>{{ pasajero.nacionalidad or 'N/A' }}</td>
+                        <td>{{ pasajero.vuelo or 'N/A' }}</td>
                         <td>{{ pasajero.fecha_nacimiento or 'N/A' }}</td>
                         <td>
                             {% if pasajero.correo %}
@@ -105,7 +105,7 @@
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Nacionalidad:</label>
-                                            <input type="text" name="nacionalidad" class="form-control" value="{{ pasajero.nacionalidad or '' }}">
+                                            <input type="text" name="nacionalidad" class="form-control" value="{{ pasajero.vuelo or '' }}">
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Fecha de Nacimiento:</label>
@@ -164,14 +164,14 @@
                         <input type="text" name="pasaporte" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Nacionalidad:</label>
-                        <input type="text" name="nacionalidad" class="form-control">
+                        <label class="form-label">vuelo:</label>
+                        <input type="text" name="vuelo" class="form-control">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Fecha de Nacimiento:</label>
                         <input type="date" name="fecha_nacimiento" class="form-control">
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3" 
                         <label class="form-label">Correo Electrónico:</label>
                         <input type="email" name="correo" class="form-control">
                     </div>
