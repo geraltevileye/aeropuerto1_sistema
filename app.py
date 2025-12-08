@@ -355,7 +355,7 @@ def editar_pasajero(id):
             SET nombre = %s, apellidos = %s, pasaporte = %s, vuelo = %s, 
                 vuelo= %s, correo = %s, telefono = %s
             WHERE id_pasajero = %s
-        ''', (nombre, apellidos, pasaporte, nacionalidad, vuelo, correo, telefono, id))
+        ''', (nombre, apellidos, pasaporte, vuelo, vuelo, correo, telefono, id))
         conn.commit()
         
         log_operacion('EDICION', 'Pasajeros', id, f'Pasajero actualizado: {nombre} {apellidos}')
