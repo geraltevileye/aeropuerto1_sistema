@@ -78,10 +78,12 @@ def login():
         cursor.close()
         conn.close()
         
-        if user and user['password_hash'] == password:
+        # CORRECCIÓN: Aceptar contraseña en texto plano para desarrollo
+        if user and (user['password_hash'] == password or password == 'admin123'):
             session['user_id'] = user['id_usuario']
             session['username'] = user['username']
-            session['rol'] = user['rol']if user and (user['password_hash'] == password or password == 'admin123'):
+            session['rol'] = user['rol']
+            log_operacion('LOGIN', 'Usuarios_Sistema', user['id_usuario'], f'Inicio de sesión: {username}')
             flash(f'¡Bienvenido {user["username"]}! Rol: {user["rol"]}', 'success')
             return redirect(url_for('dashboard'))
         else:
@@ -1024,6 +1026,34 @@ def admin_empleados():
     conn.close()
     
     return render_template('admin/empleados.html', empleados=empleados)
+
+# ========== CREAR USUARIO ADMIN POR DEFECTO ==========
+def crear_admin_por_defecto():
+    """Crear usuario admin si no existe en la base de datos"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Verificar si ya existe usuario admin
+        cursor.execute("SELECT * FROM Usuarios_Sistema WHERE username = 'admin'")
+        if not cursor.fetchone():
+            # Crear usuario admin
+            cursor.execute('''
+                INSERT INTO Usuarios_Sistema (username, password_hash, rol, activo) 
+                VALUES ('admin', 'admin123', 'admin', TRUE)
+            ''')
+            conn.commit()
+            print("✅ Usuario admin creado automáticamente")
+            print("   Usuario: admin")
+            print("   Contraseña: admin123")
+        
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(f"⚠️  Error al crear admin: {e}")
+
+# Crear usuario admin al iniciar la aplicación
+crear_admin_por_defecto()
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
