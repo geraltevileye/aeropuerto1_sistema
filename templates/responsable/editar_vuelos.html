@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+{% block title %}Editar Vuelo{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pencil me-2"></i>
+                        Editar Vuelo: {{ vuelo.id_vuelo }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('editar_vuelo', id_vuelo=vuelo.id_vuelo) }}">
+                        <div class="row">
+                            <!-- Información Básica -->
+                            <div class="col-md-6 mb-3">
+                                <label for="id_vuelo" class="form-label">
+                                    ID del Vuelo (No editable)
+                                </label>
+                                <input type="text" 
+                                       class="form-control bg-light" 
+                                       value="{{ vuelo.id_vuelo }}"
+                                       readonly>
+                                <div class="form-text">El ID del vuelo no se puede modificar</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="id_aerolinea" class="form-label">
+                                    Aerolínea
+                                </label>
+                                <select class="form-select" id="id_aerolinea" name="id_aerolinea">
+                                    <option value="">Sin aerolínea asignada</option>
+                                    {% for aerolinea in aerolineas %}
+                                    <option value="{{ aerolinea.id_aerolinea }}"
+                                            {% if vuelo.id_aerolinea == aerolinea.id_aerolinea %}selected{% endif %}>
+                                        {{ aerolinea.nombre }} ({{ aerolinea.codigo_IATA or 'Sin código' }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Origen y Destino -->
+                            <div class="col-md-6 mb-3">
+                                <label for="origen" class="form-label">
+                                    <span class="text-danger">*</span> Aeropuerto de Origen
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="origen" 
+                                       name="origen" 
+                                       value="{{ vuelo.origen }}"
+                                       required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="destino" class="form-label">
+                                    <span class="text-danger">*</span> Aeropuerto de Destino
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="destino" 
+                                       name="destino" 
+                                       value="{{ vuelo.destino }}"
+                                       required>
+                            </div>
+                            
+                            <!-- Fechas -->
+                            <div class="col-md-6 mb-3">
+                                <label for="fecha_salida" class="form-label">
+                                    <span class="text-danger">*</span> Fecha y Hora de Salida
+                                </label>
+                                {% if vuelo.fecha_salida %}
+                                <input type="datetime-local" 
+                                       class="form-control" 
+                                       id="fecha_salida" 
+                                       name="fecha_salida" 
+                                       value="{{ vuelo.fecha_salida.strftime('%Y-%m-%dT%H:%M') }}"
+                                       required>
+                                {% else %}
+                                <input type="datetime-local" 
+                                       class="form-control" 
+                                       id="fecha_salida" 
+                                       name="fecha_salida" 
+                                       required>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="fecha_llegada" class="form-label">
+                                    <span class="text-danger">*</span> Fecha y Hora de Llegada
+                                </label>
+                                {% if vuelo.fecha_llegada %}
+                                <input type="datetime-local" 
+                                       class="form-control" 
+                                       id="fecha_llegada" 
+                                       name="fecha_llegada" 
+                                       value="{{ vuelo.fecha_llegada.strftime('%Y-%m-%dT%H:%M') }}"
+                                       required>
+                                {% else %}
+                                <input type="datetime-local" 
+                                       class="form-control" 
+                                       id="fecha_llegada" 
+                                       name="fecha_llegada" 
+                                       required>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Estado y Puerta -->
+                            <div class="col-md-6 mb-3">
+                                <label for="estado" class="form-label">
+                                    <span class="text-danger">*</span> Estado del Vuelo
+                                </label>
+                                <select class="form-select" id="estado" name="estado" required>
+                                    <option value="programado" {% if vuelo.estado == 'programado' %}selected{% endif %}>Programado</option>
+                                    <option value="en_vuelo" {% if vuelo.estado == 'en_vuelo' %}selected{% endif %}>En Vuelo</option>
+                                    <option value="aterrizado" {% if vuelo.estado == 'aterrizado' %}selected{% endif %}>Aterrizado</option>
+                                    <option value="demorado" {% if vuelo.estado == 'demorado' %}selected{% endif %}>Demorado</option>
+                                    <option value="cancelado" {% if vuelo.estado == 'cancelado' %}selected{% endif %}>Cancelado</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="puerta_embarque" class="form-label">
+                                    Puerta de Embarque
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="puerta_embarque" 
+                                       name="puerta_embarque" 
+                                       value="{{ vuelo.puerta_embarque or '' }}"
+                                       placeholder="Ej: A12, B5, C8">
+                            </div>
+                        </div>
+                        
+                        <!-- Información del vuelo -->
+                        <div class="alert alert-light mt-3">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <small>
+                                        <i class="bi bi-airplane me-1"></i>
+                                        ID: {{ vuelo.id_vuelo }}
+                                    </small>
+                                </div>
+                                <div class="col-md-4">
+                                    <small>
+                                        <i class="bi bi-building me-1"></i>
+                                        Aerolínea: {{ vuelo.id_aerolinea or 'No asignada' }}
+                                    </small>
+                                </div>
+                                <div class="col-md-4">
+                                    <small>
+                                        <i class="bi bi-calendar me-1"></i>
+                                        Creado: {{ vuelo.fecha_creacion.strftime('%d/%m/%Y') if vuelo.fecha_creacion else 'N/A' }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('responsable_vuelos') }}" 
+                                       class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>
+                                        Volver al Listado
+                                    </a>
+                                    <div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-save me-1"></i>
+                                            Guardar Cambios
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Información del vuelo -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="bi bi-info-square me-2"></i>
+                                Detalles del Vuelo
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-airplane fs-1 text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-0">{{ vuelo.id_vuelo }}</h6>
+                                    <small class="text-muted">
+                                        {% if vuelo.aerolinea_nombre %}
+                                        {{ vuelo.aerolinea_nombre }}
+                                        {% else %}
+                                        Sin aerolínea asignada
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="card bg-light mb-2">
+                                        <div class="card-body text-center p-2">
+                                            <small class="text-muted">Origen</small>
+                                            <div class="fw-bold">{{ vuelo.origen }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card bg-light mb-2">
+                                        <div class="card-body text-center p-2">
+                                            <small class="text-muted">Destino</small>
+                                            <div class="fw-bold">{{ vuelo.destino }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Salida:</span>
+                                    <strong>
+                                        {% if vuelo.fecha_salida %}
+                                        {{ vuelo.fecha_salida.strftime('%d/%m/%Y %H:%M') }}
+                                        {% else %}
+                                        N/A
+                                        {% endif %}
+                                    </strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Llegada:</span>
+                                    <strong>
+                                        {% if vuelo.fecha_llegada %}
+                                        {{ vuelo.fecha_llegada.strftime('%d/%m/%Y %H:%M') }}
+                                        {% else %}
+                                        N/A
+                                        {% endif %}
+                                    </strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Puerta:</span>
+                                    <strong>{{ vuelo.puerta_embarque or 'No asignada' }}</strong>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                Impacto de los Cambios
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-warning">
+                                <h6><i class="bi bi-shield-exclamation me-2"></i>Advertencia</h6>
+                                <p class="mb-2">Los cambios en este vuelo afectarán:</p>
+                                <ul class="mb-0">
+                                    <li>Todas las reservas asociadas</li>
+                                    <li>El equipaje registrado para este vuelo</li>
+                                    <li>Los pasajeros asignados</li>
+                                    <li>El estado de las operaciones</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <h6><i class="bi bi-lightbulb me-2"></i>Recomendación</h6>
+                                <p class="mb-0">
+                                    Si cambias el estado a "Cancelado", notifica a todos los pasajeros
+                                    afectados antes de guardar los cambios.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
