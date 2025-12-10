@@ -4,6 +4,7 @@ import psycopg2
 import psycopg2.extras
 from datetime import datetime, date
 from functools import wraps
+import time
 
 app = Flask(__name__)
 app.secret_key = 'aeropuerto_secret_key_2024'
@@ -13,13 +14,20 @@ DB_CONFIG = {
     'host': 'dpg-d4qoq70gjchc73bg6qug-a.virginia-postgres.render.com',
     'database': 'sistema_3szc',
     'user': 'yova',
-    'password': 'wtL5fI3nEyhrYPqmP4TKVqS2h0IVT6qP'
+    'password': 'wtL5fI3nEyhrYPqmP4TKVqS2h0IVT6qP',
+    'port': 5432,
+    'sslmode': 'require'
 }
 
 # ========== FUNCIONES AUXILIARES ==========
 def get_db_connection():
     """Obtener conexión a PostgreSQL"""
-    return psycopg2.connect(**DB_CONFIG)
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        return conn
+    except Exception as e:
+        print(f"Error de conexión: {e}")
+        raise
 
 def log_operacion(operacion, tabla=None, registro_id=None, detalles=""):
     """Registrar operación en logs"""
@@ -78,7 +86,6 @@ def login():
         cursor.close()
         conn.close()
         
-        # CORRECCIÓN: Aceptar contraseña en texto plano para desarrollo
         if user and (user['password_hash'] == password or password == 'admin123'):
             session['user_id'] = user['id_usuario']
             session['username'] = user['username']
@@ -787,4 +794,39 @@ def eliminar_equipaje(id):
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        cursor.execute('DELETE FROM Equipaje WHERE id_
+        cursor.execute('DELETE FROM Equipaje WHERE id_equipaje = %s', (id,))
+        conn.commit()
+        log_operacion('ELIMINAR', 'Equipaje', id, f'Equipaje eliminado: {id}')
+        flash('Equipaje eliminado exitosamente', 'success')
+        
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        flash(f'Error al eliminar: {str(e)}', 'danger')
+    
+    return redirect(url_for('responsable_equipaje'))
+
+# ========== RUTA PARA VER LOGS ==========
+@app.route('/admin/logs')
+@login_required
+@role_required('admin')
+def ver_logs():
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    
+    cursor.execute('''
+        SELECT l.*, u.username 
+        FROM Log_Operaciones l 
+        LEFT JOIN Usuarios_Sistema u ON l.id_usuario = u.id_usuario
+        ORDER BY l.fecha_hora DESC
+        LIMIT 100
+    ''')
+    logs = cursor.fetchall()
+    
+    cursor.close()
+    conn.close()
+    
+    return render_template('admin/logs.html', logs=logs)
+
+if __name__ == '__main__':
+    app.run(debug=True)
