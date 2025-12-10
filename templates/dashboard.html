@@ -1,40 +1,166 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Dashboard{% endblock %}
+{% block header %}Dashboard{% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Dashboard</li>
+{% endblock %}
+
+{% block actions %}
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary">
+            <i class="bi bi-calendar-plus"></i> Nuevo Vuelo
+        </button>
+        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" 
+                data-bs-toggle="dropdown">
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ url_for('crear_reserva') }}">
+                <i class="bi bi-plus-circle"></i> Nueva Reserva
+            </a></li>
+            <li><a class="dropdown-item" href="{{ url_for('crear_pasajero') }}">
+                <i class="bi bi-person-plus"></i> Nuevo Pasajero
+            </a></li>
+        </ul>
+    </div>
+{% endblock %}
 
 {% block content %}
-<h2 class="mb-4"><i class="bi bi-speedometer2"></i> Dashboard</h2>
+<div class="row mb-4">
+    <!-- Estadísticas -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card vuelos h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title text-muted">Vuelos Hoy</h5>
+                        <h2 class="mb-0">{{ vuelos_hoy }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-airplane text-primary" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('consulta_vuelos_hoy') }}" class="btn btn-sm btn-outline-primary mt-3">
+                    Ver Detalles <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card aerolineas h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title text-muted">Aerolíneas</h5>
+                        <h2 class="mb-0">{{ total_aerolineas }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-building text-success" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('admin_aerolineas') }}" class="btn btn-sm btn-outline-success mt-3">
+                    Gestionar <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card pasajeros h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title text-muted">Pasajeros</h5>
+                        <h2 class="mb-0">{{ total_pasajeros }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-people text-warning" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('admin_pasajeros') }}" class="btn btn-sm btn-outline-warning mt-3">
+                    Ver Lista <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card reservas h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title text-muted">Reservas Activas</h5>
+                        <h2 class="mb-0">{{ total_reservas }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-ticket-perforated text-purple" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('responsable_reservas') }}" class="btn btn-sm btn-outline-purple mt-3">
+                    Ver Reservas <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Acciones Rápidas -->
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
         <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Bienvenido, {{ username }}!</h5>
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-lightning-charge text-warning me-2"></i>Acciones Rápidas</h5>
             </div>
             <div class="card-body">
-                <p>Rol: <span class="badge bg-{% if rol == 'admin' %}danger{% elif rol == 'responsable' %}warning{% else %}info{% endif %}">{{ rol }}</span></p>
-                
-                <div class="row mt-4">
-                    <div class="col-md-4">
-                        <div class="card text-white bg-info">
-                            <div class="card-body text-center">
-                                <h5><i class="bi bi-airplane"></i> Vuelos Hoy</h5>
-                                <h2>{{ vuelos_hoy }}</h2>
-                            </div>
-                        </div>
+                <div class="row">
+                    {% if session.rol == 'admin' %}
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('crear_aerolinea') }}" class="btn btn-outline-primary w-100 h-100 py-3">
+                            <i class="bi bi-building fs-1 mb-2 d-block"></i>
+                            Nueva Aerolínea
+                        </a>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card text-white bg-success">
-                            <div class="card-body text-center">
-                                <h5><i class="bi bi-building"></i> Aerolíneas</h5>
-                                <h2>{{ total_aerolineas }}</h2>
-                            </div>
-                        </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('crear_pasajero') }}" class="btn btn-outline-success w-100 h-100 py-3">
+                            <i class="bi bi-person-plus fs-1 mb-2 d-block"></i>
+                            Nuevo Pasajero
+                        </a>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card text-white bg-warning">
-                            <div class="card-body text-center">
-                                <h5><i class="bi bi-people"></i> Pasajeros</h5>
+                    {% endif %}
+                    
+                    {% if session.rol in ['admin', 'responsable'] %}
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('crear_vuelo') }}" class="btn btn-outline-info w-100 h-100 py-3">
+                            <i class="bi bi-airplane fs-1 mb-2 d-block"></i>
+                            Nuevo Vuelo
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('crear_reserva') }}" class="btn btn-outline-warning w-100 h-100 py-3">
+                            <i class="bi bi-ticket-perforated fs-1 mb-2 d-block"></i>
+                            Nueva Reserva
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-purple { color: #9d4edd; }
+    .btn-outline-purple { 
+        color: #9d4edd;
+        border-color: #9d4edd;
+    }
+    .btn-outline-purple:hover {
+        background-color: #9d4edd;
+        color: white;
+    }
+</style>
+{% endblock %}                                <h5><i class="bi bi-people"></i> Pasajeros</h5>
                                 <h2>{{ total_pasajeros }}</h2>
                             </div>
                         </div>
