@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Reserva{% endblock %}
+{% block header %}Crear Nueva Reserva{% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ url_for('responsable_reservas') }}">Reservas</a></li>
+    <li class="breadcrumb-item active">Nueva</li>
+{% endblock %}
+
+{% block actions %}
+    <a href="{{ url_for('responsable_reservas') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Información de la Reserva</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_pasajero" class="form-label">Pasajero *</label>
+                            <select class="form-control" id="id_pasajero" name="id_pasajero" required>
+                                <option value="">Seleccione pasajero</option>
+                                {% for p in pasajeros %}
+                                <option value="{{ p.id_pasajero }}">
+                                    {{ p.nombre }} {{ p.apellidos }} ({{ p.pasaporte }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">
+                                <a href="{{ url_for('crear_pasajero') }}">¿No encuentra el pasajero? Cree uno nuevo</a>
+                            </small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_vuelo" class="form-label">Vuelo *</label>
+                            <select class="form-control" id="id_vuelo" name="id_vuelo" required>
+                                <option value="">Seleccione vuelo</option>
+                                {% for v in vuelos %}
+                                <option value="{{ v.id_vuelo }}">
+                                    {{ v.id_vuelo }}: {{ v.origen }} → {{ v.destino }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="clase" class="form-label">Clase *</label>
+                            <select class="form-control" id="clase" name="clase" required>
+                                <option value="Economica">Económica</option>
+                                <option value="Ejecutiva">Ejecutiva</option>
+                                <option value="Primera">Primera Clase</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="asiento" class="form-label">Asiento</label>
+                            <input type="text" class="form-control" id="asiento" name="asiento" 
+                                   placeholder="Ej: 12A">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="precio" class="form-label">Precio (€)</label>
+                            <input type="number" class="form-control" id="precio" name="precio" 
+                                   placeholder="Ej: 150.00" step="0.01">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="estado" class="form-label">Estado *</label>
+                            <select class="form-control" id="estado" name="estado" required>
+                                <option value="Confirmada">Confirmada</option>
+                                <option value="En espera">En espera</option>
+                                <option value="Cancelada">Cancelada</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Crear Reserva
+                        </button>
+                        <a href="{{ url_for('responsable_reservas') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
