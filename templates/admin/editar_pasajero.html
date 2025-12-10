@@ -1,83 +1,211 @@
 {% extends "base.html" %}
-
 {% block title %}Editar Pasajero{% endblock %}
-{% block header %}Editar Pasajero{% endblock %}
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ url_for('admin_pasajeros') }}">Pasajeros</a></li>
-    <li class="breadcrumb-item active">Editar</li>
-{% endblock %}
-
-{% block actions %}
-    <a href="{{ url_for('admin_pasajeros') }}" class="btn btn-secondary">
-        <i class="bi bi-arrow-left"></i> Volver
-    </a>
-{% endblock %}
-
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Editar Pasajero: {{ pasajero.nombre }} {{ pasajero.apellidos }}</h5>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Editar Pasajero: {{ pasajero.nombre }} {{ pasajero.apellidos }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('editar_pasajero', id=pasajero.id_pasajero) }}">
+                        <h6 class="mb-3 border-bottom pb-2">
+                            <i class="bi bi-person-badge me-2"></i>
+                            Información Personal
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nombre" class="form-label">
+                                    <span class="text-danger">*</span> Nombre(s)
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="nombre" 
+                                       name="nombre" 
+                                       value="{{ pasajero.nombre }}"
+                                       required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="apellidos" class="form-label">
+                                    <span class="text-danger">*</span> Apellidos
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="apellidos" 
+                                       name="apellidos" 
+                                       value="{{ pasajero.apellidos }}"
+                                       required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="pasaporte" class="form-label">
+                                    <span class="text-danger">*</span> Número de Pasaporte
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="pasaporte" 
+                                       name="pasaporte" 
+                                       value="{{ pasajero.pasaporte }}"
+                                       required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="FechNac" class="form-label">
+                                    Fecha de Nacimiento
+                                </label>
+                                <input type="date" 
+                                       class="form-control" 
+                                       id="FechNac" 
+                                       name="FechNac" 
+                                       value="{{ pasajero.FechNac or '' }}">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="vuelo" class="form-label">
+                                    Vuelo Asignado
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="vuelo" 
+                                       name="vuelo" 
+                                       value="{{ pasajero.vuelo or '' }}"
+                                       placeholder="Ej: AA123, DL456">
+                            </div>
+                        </div>
+                        
+                        <h6 class="mt-4 mb-3 border-bottom pb-2">
+                            <i class="bi bi-telephone me-2"></i>
+                            Información de Contacto
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="correo" class="form-label">
+                                    Correo Electrónico
+                                </label>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="correo" 
+                                       name="correo" 
+                                       value="{{ pasajero.correo or '' }}"
+                                       placeholder="ejemplo@correo.com">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="telefono" class="form-label">
+                                    Teléfono
+                                </label>
+                                <input type="tel" 
+                                       class="form-control" 
+                                       id="telefono" 
+                                       name="telefono" 
+                                       value="{{ pasajero.telefono or '' }}"
+                                       placeholder="Ej: +52 555 123 4567">
+                            </div>
+                        </div>
+                        
+                        <!-- Información del registro -->
+                        <div class="alert alert-light mt-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small>
+                                        <i class="bi bi-person-badge me-1"></i>
+                                        ID: {{ pasajero.id_pasajero }}
+                                    </small>
+                                </div>
+                                <div class="col-md-6">
+                                    <small>
+                                        <i class="bi bi-passport me-1"></i>
+                                        Pasaporte: {{ pasajero.pasaporte }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('admin_pasajeros') }}" 
+                                       class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>
+                                        Volver al Listado
+                                    </a>
+                                    <div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-save me-1"></i>
+                                            Guardar Cambios
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="card-body">
-                <form method="POST">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="nombre" class="form-label">Nombre *</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" 
-                                   value="{{ pasajero.nombre }}" required>
+            
+            <!-- Información del pasajero -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="bi bi-info-square me-2"></i>
+                                Datos Actuales
+                            </h6>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="apellidos" class="form-label">Apellidos *</label>
-                            <input type="text" class="form-control" id="apellidos" name="apellidos" 
-                                   value="{{ pasajero.apellidos }}" required>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="pasaporte" class="form-label">Pasaporte *</label>
-                            <input type="text" class="form-control" id="pasaporte" name="pasaporte" 
-                                   value="{{ pasajero.pasaporte }}" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="vuelo" class="form-label">Número de Vuelo</label>
-                            <input type="text" class="form-control" id="vuelo" name="vuelo" 
-                                   value="{{ pasajero.vuelo or '' }}">
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="FechNac" class="form-label">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="FechNac" name="FechNac" 
-                                   value="{{ pasajero.FechNac.strftime('%Y-%m-%d') if pasajero.FechNac else '' }}">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="correo" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="correo" name="correo" 
-                                   value="{{ pasajero.correo or '' }}">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-person-circle fs-1 text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6>{{ pasajero.nombre }} {{ pasajero.apellidos }}</h6>
+                                    <small class="text-muted">ID: {{ pasajero.id_pasajero }}</small>
+                                </div>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Pasaporte:</span>
+                                    <strong>{{ pasajero.pasaporte }}</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Fecha Nacimiento:</span>
+                                    <strong>{{ pasajero.FechNac or 'No registrada' }}</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Vuelo Asignado:</span>
+                                    <strong>{{ pasajero.vuelo or 'No asignado' }}</strong>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="telefono" class="form-label">Teléfono</label>
-                            <input type="text" class="form-control" id="telefono" name="telefono" 
-                                   value="{{ pasajero.telefono or '' }}">
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                Notas Importantes
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-warning">
+                                <h6><i class="bi bi-shield-exclamation me-2"></i>Advertencia</h6>
+                                <p class="mb-0">
+                                    El cambio del número de pasaporte puede afectar las reservas existentes.
+                                    Verifica que la información sea correcta antes de guardar.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save"></i> Guardar Cambios
-                        </button>
-                        <a href="{{ url_for('admin_pasajeros') }}" class="btn btn-secondary">
-                            <i class="bi bi-x-circle"></i> Cancelar
-                        </a>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
