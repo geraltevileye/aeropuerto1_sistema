@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Reservas{% endblock %}
+{% block header %}Gestión de Reservas{% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Reservas</li>
+{% endblock %}
+
+{% block actions %}
+    <a href="{{ url_for('crear_reserva') }}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Nueva Reserva
+    </a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Lista de Reservas</h5>
+    </div>
+    
+    <div class="card-body">
+        {% if reservas %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Pasajero</th>
+                        <th>Vuelo</th>
+                        <th>Ruta</th>
+                        <th>Clase</th>
+                        <th>Asiento</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                        <th>Fecha Reserva</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reservas %}
+                    <tr>
+                        <td>{{ r.id_reserva }}</td>
+                        <td>{{ r.nombre }} {{ r.apellidos }}</td>
+                        <td><span class="badge bg-info">{{ r.id_vuelo }}</span></td>
+                        <td>{{ r.origen }} → {{ r.destino }}</td>
+                        <td>
+                            <span class="badge bg-{{ 
+                                'success' if r.clase == 'Primera' 
+                                else 'warning' if r.clase == 'Ejecutiva'
+                                else 'secondary' 
+                            }}">
+                                {{ r.clase }}
+                            </span>
+                        </td>
+                        <td>{{ r.asiento or '-' }}</td>
+                        <td>{{ "%.2f €"|format(r.precio) if r.precio else '-' }}</td>
+                        <td>
+                            <span class="badge bg-{{ 
+                                'success' if r.estado == 'Confirmada' 
+                                else 'danger' if r.estado == 'Cancelada'
+                                else 'warning' 
+                            }}">
+                                {{ r.estado }}
+                            </span>
+                        </td>
+                        <td>{{ r.fecha_reserva.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td class="text-end table-actions">
+                            <a href="{{ url_for('editar_reserva', id=r.id_reserva) }}" 
+                               class="btn btn-sm btn-warning btn-action" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <button type="button" class="btn btn-sm btn-info btn-action" 
+                                    data-bs-toggle="modal" data-bs-target="#estadoModal{{ r.id_reserva }}" 
+                                    title="Cambiar Estado">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </button>
+                            <a href="{{ url_for('eliminar_reserva', id=r.id_reserva) }}" 
+                               class="btn btn-sm btn-danger btn-action" 
+                               onclick="return confirm('¿Seguro que deseas eliminar esta reserva?')" 
+                               title="Eliminar">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    
+                    <!-- Modal para cambiar estado -->
+                    <div class="modal fade" id="estadoModal{{ r.id_reserva }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Cambiar Estado de Reserva</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <form method="POST" action="{{ url_for('cambiar_estado_reserva', id=r.id_reserva) }}">
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">Nuevo Estado</label>
+                                            <select name="estado" class="form-control" required>
+                                                <option value="Confirmada" {% if r.estado == 'Confirmada' %}selected{% endif %}>Confirmada</option>
+                                                <option value="Cancelada" {% if r.estado == 'Cancelada' %}selected{% endif %}>Cancelada</option>
+                                                <option value="En espera" {% if r.estado == 'En espera' %}selected{% endif %}>En espera</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">Actualizar Estado</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-ticket-perforated fs-1 text-muted mb-3 d-block"></i>
+            <h5>No hay reservas registradas</h5>
+            <p class="text-muted">Comienza agregando una nueva reserva</p>
+            <a href="{{ url_for('crear_reserva') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Agregar Reserva
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
