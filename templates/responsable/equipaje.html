@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Equipaje{% endblock %}
+{% block header %}Gestión de Equipaje{% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Equipaje</li>
+{% endblock %}
+
+{% block actions %}
+    <a href="{{ url_for('crear_equipaje') }}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Nuevo Equipaje
+    </a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Registro de Equipaje</h5>
+    </div>
+    
+    <div class="card-body">
+        {% if equipaje %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Pasajero</th>
+                        <th>Vuelo</th>
+                        <th>Peso (kg)</th>
+                        <th>Tipo</th>
+                        <th>Etiqueta</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in equipaje %}
+                    <tr>
+                        <td>{{ e.id_equipaje }}</td>
+                        <td>{{ e.nombre }} {{ e.apellidos }}</td>
+                        <td><span class="badge bg-info">{{ e.id_vuelo or '-' }}</span></td>
+                        <td>{{ "%.1f"|format(e.peso_kg) if e.peso_kg else '-' }}</td>
+                        <td>
+                            <span class="badge bg-{{ 'warning' if e.tipo == 'Mano' else 'primary' }}">
+                                {{ e.tipo }}
+                            </span>
+                        </td>
+                        <td><code>{{ e.etiqueta or '-' }}</code></td>
+                        <td class="text-end table-actions">
+                            <a href="{{ url_for('editar_equipaje', id=e.id_equipaje) }}" 
+                               class="btn btn-sm btn-warning btn-action" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{{ url_for('eliminar_equipaje', id=e.id_equipaje) }}" 
+                               class="btn btn-sm btn-danger btn-action" 
+                               onclick="return confirm('¿Seguro que deseas eliminar este registro de equipaje?')" 
+                               title="Eliminar">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-bag fs-1 text-muted mb-3 d-block"></i>
+            <h5>No hay equipaje registrado</h5>
+            <p class="text-muted">Comienza registrando equipaje</p>
+            <a href="{{ url_for('crear_equipaje') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Registrar Equipaje
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
