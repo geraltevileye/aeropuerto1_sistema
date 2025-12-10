@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Equipaje{% endblock %}
+{% block header %}Editar Equipaje: {{ equipaje.id_equipaje }}{% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ url_for('responsable_equipaje') }}">Equipaje</a></li>
+    <li class="breadcrumb-item active">Editar</li>
+{% endblock %}
+
+{% block actions %}
+    <a href="{{ url_for('responsable_equipaje') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Editar Información del Equipaje</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_pasajero" class="form-label">Pasajero *</label>
+                            <select class="form-control" id="id_pasajero" name="id_pasajero" required>
+                                {% for p in pasajeros %}
+                                <option value="{{ p.id_pasajero }}" 
+                                    {% if equipaje.id_pasajero == p.id_pasajero %}selected{% endif %}>
+                                    {{ p.nombre }} {{ p.apellidos }} ({{ p.pasaporte }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_vuelo" class="form-label">Vuelo</label>
+                            <select class="form-control" id="id_vuelo" name="id_vuelo">
+                                <option value="">Sin vuelo asignado</option>
+                                {% for v in vuelos %}
+                                <option value="{{ v.id_vuelo }}" 
+                                    {% if equipaje.id_vuelo == v.id_vuelo %}selected{% endif %}>
+                                    {{ v.id_vuelo }}: {{ v.origen }} → {{ v.destino }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="peso_kg" class="form-label">Peso (kg)</label>
+                            <input type="number" class="form-control" id="peso_kg" name="peso_kg" 
+                                   value="{{ equipaje.peso_kg or '' }}" step="0.1" min="0" max="100">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="tipo" class="form-label">Tipo *</label>
+                            <select class="form-control" id="tipo" name="tipo" required>
+                                <option value="Mano" {% if equipaje.tipo == 'Mano' %}selected{% endif %}>Mano</option>
+                                <option value="Bodega" {% if equipaje.tipo == 'Bodega' %}selected{% endif %}>Bodega</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="etiqueta" class="form-label">Etiqueta</label>
+                            <input type="text" class="form-control" id="etiqueta" name="etiqueta" 
+                                   value="{{ equipaje.etiqueta or '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Guardar Cambios
+                        </button>
+                        <a href="{{ url_for('responsable_equipaje') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
