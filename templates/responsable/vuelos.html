@@ -1,88 +1,226 @@
 {% extends "base.html" %}
-
-{% block title %}Vuelos{% endblock %}
-{% block header %}Gestión de Vuelos{% endblock %}
-{% block breadcrumb %}
-    <li class="breadcrumb-item active">Vuelos</li>
-{% endblock %}
-
-{% block actions %}
-    <a href="{{ url_for('crear_vuelo') }}" class="btn btn-success">
-        <i class="bi bi-plus-circle"></i> Nuevo Vuelo
-    </a>
-{% endblock %}
-
+{% block title %}Gestión de Vuelos{% endblock %}
 {% block content %}
-<div class="card">
-    <div class="card-header">
-        <h5 class="mb-0">Lista de Vuelos Programados</h5>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="bi bi-airplane-fill me-2"></i>
+            Gestión de Vuelos
+        </h1>
+        <a href="{{ url_for('crear_vuelo') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>
+            Nuevo Vuelo
+        </a>
     </div>
     
-    <div class="card-body">
-        {% if vuelos %}
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID Vuelo</th>
-                        <th>Aerolínea</th>
-                        <th>Origen</th>
-                        <th>Destino</th>
-                        <th>Salida</th>
-                        <th>Llegada</th>
-                        <th>Estado</th>
-                        <th>Puerta</th>
-                        <th class="text-end">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for v in vuelos %}
-                    <tr>
-                        <td><strong>{{ v.id_vuelo }}</strong></td>
-                        <td>{{ v.aerolinea_nombre or '-' }}</td>
-                        <td>{{ v.origen }}</td>
-                        <td>{{ v.destino }}</td>
-                        <td>{{ v.fecha_salida.strftime('%d/%m/%Y %H:%M') }}</td>
-                        <td>{{ v.fecha_llegada.strftime('%d/%m/%Y %H:%M') }}</td>
-                        <td>
-                            <span class="badge bg-{{ 
-                                'success' if v.estado == 'Programado' 
-                                else 'warning' if v.estado == 'Abordando'
-                                else 'primary' if v.estado == 'Despegado'
-                                else 'info' if v.estado == 'Aterrizado'
-                                else 'danger' 
-                            }}">
-                                {{ v.estado }}
-                            </span>
-                        </td>
-                        <td>{{ v.puerta_embarque or '-' }}</td>
-                        <td class="text-end table-actions">
-                            <a href="{{ url_for('editar_vuelo', id_vuelo=v.id_vuelo) }}" 
-                               class="btn btn-sm btn-warning btn-action" title="Editar">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <a href="{{ url_for('eliminar_vuelo', id_vuelo=v.id_vuelo) }}" 
-                               class="btn btn-sm btn-danger btn-action" 
-                               onclick="return confirm('¿Seguro que deseas eliminar este vuelo?')" 
-                               title="Eliminar">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h6 class="mb-0">
+                <i class="bi bi-funnel me-2"></i>
+                Filtros de Vuelos
+            </h6>
         </div>
-        {% else %}
-        <div class="text-center py-5">
-            <i class="bi bi-airplane fs-1 text-muted mb-3 d-block"></i>
-            <h5>No hay vuelos programados</h5>
-            <p class="text-muted">Comienza agregando un nuevo vuelo</p>
-            <a href="{{ url_for('crear_vuelo') }}" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Agregar Vuelo
-            </a>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Estado</label>
+                    <select class="form-select">
+                        <option selected>Todos los estados</option>
+                        <option value="programado">Programado</option>
+                        <option value="en_vuelo">En Vuelo</option>
+                        <option value="aterrizado">Aterrizado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Fecha Desde</label>
+                    <input type="date" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Fecha Hasta</label>
+                    <input type="date" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Aerolínea</label>
+                    <select class="form-select">
+                        <option selected>Todas</option>
+                        {% for vuelo in vuelos %}
+                            {% if vuelo.aerolinea_nombre %}
+                            <option value="{{ vuelo.id_aerolinea }}">{{ vuelo.aerolinea_nombre }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
         </div>
-        {% endif %}
+    </div>
+    
+    <!-- Tabla de Vuelos -->
+    <div class="card">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">
+                <i class="bi bi-calendar-event me-2"></i>
+                Lista de Vuelos ({{ vuelos|length }})
+            </h6>
+            <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary" type="button">
+                    <i class="bi bi-printer me-1"></i> Imprimir
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID Vuelo</th>
+                            <th>Aerolínea</th>
+                            <th>Origen</th>
+                            <th>Destino</th>
+                            <th>Salida</th>
+                            <th>Llegada</th>
+                            <th>Estado</th>
+                            <th>Puerta</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if vuelos %}
+                            {% for vuelo in vuelos %}
+                            <tr>
+                                <td>
+                                    <strong class="text-primary">{{ vuelo.id_vuelo }}</strong>
+                                </td>
+                                <td>{{ vuelo.aerolinea_nombre or 'Sin asignar' }}</td>
+                                <td>
+                                    <span class="badge bg-info">{{ vuelo.origen }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">{{ vuelo.destino }}</span>
+                                </td>
+                                <td>
+                                    {% if vuelo.fecha_salida %}
+                                    {{ vuelo.fecha_salida.strftime('%d/%m/%Y %H:%M') }}
+                                    {% else %}
+                                    N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if vuelo.fecha_llegada %}
+                                    {{ vuelo.fecha_llegada.strftime('%d/%m/%Y %H:%M') }}
+                                    {% else %}
+                                    N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% set estado_colors = {
+                                        'programado': 'secondary',
+                                        'en_vuelo': 'primary',
+                                        'aterrizado': 'success',
+                                        'cancelado': 'danger',
+                                        'demorado': 'warning'
+                                    } %}
+                                    {% set color = estado_colors.get(vuelo.estado, 'secondary') %}
+                                    <span class="badge bg-{{ color }}">{{ vuelo.estado|title }}</span>
+                                </td>
+                                <td>
+                                    {% if vuelo.puerta_embarque %}
+                                    <span class="badge bg-dark">{{ vuelo.puerta_embarque }}</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{{ url_for('editar_vuelo', id_vuelo=vuelo.id_vuelo) }}" 
+                                           class="btn btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{{ url_for('eliminar_vuelo', id_vuelo=vuelo.id_vuelo) }}" 
+                                           class="btn btn-outline-danger"
+                                           onclick="return confirmarEliminacion('¿Eliminar vuelo {{ vuelo.id_vuelo }}?')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                        <button class="btn btn-outline-info" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="9" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="bi bi-airplane fs-1"></i>
+                                        <p class="mt-2">No hay vuelos registrados</p>
+                                        <a href="{{ url_for('crear_vuelo') }}" class="btn btn-primary mt-2">
+                                            <i class="bi bi-plus-circle me-1"></i>
+                                            Crear Primer Vuelo
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary active">Todos</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary">Hoy</button>
+                        <button type="button" class="btn btn-sm btn-outline-success">Esta Semana</button>
+                        <button type="button" class="btn btn-sm btn-outline-warning">Próximos</button>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i>
+                        Actualizado: {{ now.strftime('%H:%M') }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Resumen de Estados -->
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h6>Programados</h6>
+                    <h3>{{ vuelos|selectattr('estado', 'equalto', 'programado')|list|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h6>En Vuelo</h6>
+                    <h3>{{ vuelos|selectattr('estado', 'equalto', 'en_vuelo')|list|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h6>Demorados</h6>
+                    <h3>{{ vuelos|selectattr('estado', 'equalto', 'demorado')|list|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h6>Cancelados</h6>
+                    <h3>{{ vuelos|selectattr('estado', 'equalto', 'cancelado')|list|length }}</h3>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
