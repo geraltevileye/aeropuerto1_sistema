@@ -44,6 +44,19 @@
                 <hr class="my-4">
                 
                 <h5>Accesos rápidos:</h5>
+                <!-- En la sección de accesos rápidos, agregar: -->
+{% if rol in ['admin', 'responsable'] %}
+<div class="col-md-3 mb-2">
+    <a href="{{ url_for('responsable_reservas') }}" class="btn btn-info w-100">
+        <i class="bi bi-ticket-perforated"></i> Reservas
+    </a>
+</div>
+<div class="col-md-3 mb-2">
+    <a href="{{ url_for('responsable_equipaje') }}" class="btn btn-secondary w-100">
+        <i class="bi bi-suitcase"></i> Equipaje
+    </a>
+</div>
+{% endif %}
                 <div class="row">
                     {% if rol == 'admin' %}
                     <div class="col-md-3 mb-2">
