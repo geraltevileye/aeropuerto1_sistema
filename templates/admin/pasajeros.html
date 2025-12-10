@@ -1,91 +1,166 @@
 {% extends "base.html" %}
-
-{% block title %}Pasajeros{% endblock %}
-{% block header %}Gestión de Pasajeros{% endblock %}
-{% block breadcrumb %}
-    <li class="breadcrumb-item active">Pasajeros</li>
-{% endblock %}
-
-{% block actions %}
-    <a href="{{ url_for('crear_pasajero') }}" class="btn btn-success">
-        <i class="bi bi-person-plus"></i> Nuevo Pasajero
-    </a>
-{% endblock %}
-
+{% block title %}Gestión de Pasajeros{% endblock %}
 {% block content %}
-<div class="card">
-    <div class="card-header">
-        <div class="row">
-            <div class="col-md-6">
-                <h5 class="mb-0">Lista de Pasajeros</h5>
-            </div>
-            <div class="col-md-6">
-                <form method="GET" class="d-flex">
-                    <input type="text" name="nombre" class="form-control me-2" placeholder="Buscar por nombre" 
-                           value="{{ request.args.get('nombre', '') }}">
-                    <input type="text" name="pasaporte" class="form-control me-2" placeholder="Pasaporte" 
-                           value="{{ request.args.get('pasaporte', '') }}">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-search"></i>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="bi bi-people me-2"></i>
+            Gestión de Pasajeros
+        </h1>
+        <a href="{{ url_for('crear_pasajero') }}" class="btn btn-primary">
+            <i class="bi bi-person-plus me-1"></i>
+            Nuevo Pasajero
+        </a>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h6 class="mb-0">
+                <i class="bi bi-search me-2"></i>
+                Buscar Pasajeros
+            </h6>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-6">
+                    <label for="nombre" class="form-label">Nombre o Apellido</label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="nombre" 
+                           name="nombre" 
+                           value="{{ request.args.get('nombre', '') }}"
+                           placeholder="Buscar por nombre o apellido">
+                </div>
+                <div class="col-md-6">
+                    <label for="pasaporte" class="form-label">Número de Pasaporte</label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="pasaporte" 
+                           name="pasaporte"
+                           value="{{ request.args.get('pasaporte', '') }}"
+                           placeholder="Buscar por pasaporte">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-search me-1"></i>
+                        Buscar
                     </button>
-                </form>
-            </div>
+                    <a href="{{ url_for('admin_pasajeros') }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-clockwise me-1"></i>
+                        Mostrar Todos
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
     
-    <div class="card-body">
-        {% if pasajeros %}
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Apellidos</th>
-                        <th>Pasaporte</th>
-                        <th>Vuelo</th>
-                        <th>Correo</th>
-                        <th>Teléfono</th>
-                        <th class="text-end">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for p in pasajeros %}
-                    <tr>
-                        <td>{{ p.id_pasajero }}</td>
-                        <td>{{ p.nombre }}</td>
-                        <td>{{ p.apellidos }}</td>
-                        <td><span class="badge bg-info">{{ p.pasaporte }}</span></td>
-                        <td>{{ p.vuelo or '-' }}</td>
-                        <td>{{ p.correo or '-' }}</td>
-                        <td>{{ p.telefono or '-' }}</td>
-                        <td class="text-end table-actions">
-                            <a href="{{ url_for('editar_pasajero', id=p.id_pasajero) }}" 
-                               class="btn btn-sm btn-warning btn-action" title="Editar">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <a href="{{ url_for('eliminar_pasajero', id=p.id_pasajero) }}" 
-                               class="btn btn-sm btn-danger btn-action" 
-                               onclick="return confirm('¿Seguro que deseas eliminar este pasajero?')" 
-                               title="Eliminar">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <!-- Tabla de Pasajeros -->
+    <div class="card">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">
+                <i class="bi bi-person-lines-fill me-2"></i>
+                Lista de Pasajeros ({{ pasajeros|length }})
+            </h6>
+            <span class="badge bg-info">
+                Total: {{ pasajeros|length }}
+            </span>
         </div>
-        {% else %}
-        <div class="text-center py-5">
-            <i class="bi bi-people fs-1 text-muted mb-3 d-block"></i>
-            <h5>No hay pasajeros registrados</h5>
-            <p class="text-muted">Comienza agregando un nuevo pasajero</p>
-            <a href="{{ url_for('crear_pasajero') }}" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Agregar Pasajero
-            </a>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre Completo</th>
+                            <th>Pasaporte</th>
+                            <th>Vuelo</th>
+                            <th>Correo</th>
+                            <th>Teléfono</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if pasajeros %}
+                            {% for pasajero in pasajeros %}
+                            <tr>
+                                <td>{{ pasajero.id_pasajero }}</td>
+                                <td>
+                                    <strong>{{ pasajero.nombre }} {{ pasajero.apellidos }}</strong>
+                                    {% if pasajero.FechNac %}
+                                    <br>
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar me-1"></i>
+                                        {{ pasajero.FechNac }}
+                                    </small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-dark">{{ pasajero.pasaporte }}</span>
+                                </td>
+                                <td>{{ pasajero.vuelo or 'N/A' }}</td>
+                                <td>
+                                    {% if pasajero.correo %}
+                                    <a href="mailto:{{ pasajero.correo }}" class="text-decoration-none">
+                                        {{ pasajero.correo }}
+                                    </a>
+                                    {% else %}
+                                    N/A
+                                    {% endif %}
+                                </td>
+                                <td>{{ pasajero.telefono or 'N/A' }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{{ url_for('editar_pasajero', id=pasajero.id_pasajero) }}" 
+                                           class="btn btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{{ url_for('eliminar_pasajero', id=pasajero.id_pasajero) }}" 
+                                           class="btn btn-outline-danger"
+                                           onclick="return confirmarEliminacion('¿Eliminar pasajero {{ pasajero.nombre }} {{ pasajero.apellidos }}?')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-outline-info" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="bi bi-people fs-1"></i>
+                                        <p class="mt-2">No se encontraron pasajeros</p>
+                                        <a href="{{ url_for('crear_pasajero') }}" class="btn btn-primary mt-2">
+                                            <i class="bi bi-person-plus me-1"></i>
+                                            Agregar Primer Pasajero
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-        {% endif %}
+        <div class="card-footer bg-light">
+            <div class="row">
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        {{ pasajeros|length }} pasajeros registrados
+                    </small>
+                </div>
+                <div class="col-md-6 text-end">
+                    <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i>
+                        Actualizado: {{ now.strftime('%d/%m/%Y %H:%M') }}
+                    </small>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
