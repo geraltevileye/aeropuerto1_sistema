@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Reservas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-ticket-perforated"></i> Reservas (Pasajeros-Vuelos)</h2>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarModal">
+        <i class="bi bi-plus-circle"></i> Nueva Reserva
+    </button>
+</div>
+
+<!-- Filtros -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtrar Reservas</h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-3">
+                <input type="text" name="vuelo" class="form-control" placeholder="Número de vuelo" value="{{ request.args.get('vuelo', '') }}">
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="pasajero" class="form-control" placeholder="Nombre pasajero" value="{{ request.args.get('pasajero', '') }}">
+            </div>
+            <div class="col-md-3">
+                <select name="estado" class="form-select">
+                    <option value="">Todos los estados</option>
+                    <option value="Confirmada" {% if request.args.get('estado') == 'Confirmada' %}selected{% endif %}>Confirmada</option>
+                    <option value="Cancelada" {% if request.args.get('estado') == 'Cancelada' %}selected{% endif %}>Cancelada</option>
+                    <option value="En espera" {% if request.args.get('estado') == 'En espera' %}selected{% endif %}>En espera</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabla de reservas -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Pasajero</th>
+                        <th>Vuelo</th>
+                        <th>Clase</th>
+                        <th>Asiento</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                        <th>Fecha Reserva</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reserva in reservas %}
+                    <tr>
+                        <td>{{ reserva.id_reserva }}</td>
+                        <td>
+                            <strong>{{ reserva.pasajero_nombre }} {{ reserva.pasajero_apellidos }}</strong><br>
+                            <small class="text-muted">{{ reserva.pasaporte }}</small>
+                        </td>
+                        <td>
+                            <strong>{{ reserva.id_vuelo }}</strong><br>
+                            <small>{{ reserva.origen }} → {{ reserva.destino }}</small><br>
+                            <small>{{ reserva.fecha_salida.strftime('%d/%m/%Y %H:%M') }}</small>
+                        </td>
+                        <td>
+                            {% if reserva.clase == 'Ejecutiva' %}
+                            <span class="badge bg-warning">{{ reserva.clase }}</span>
+                            {% elif reserva.clase == 'Primera' %}
+                            <span class="badge bg-danger">{{ reserva.clase }}</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ reserva.clase }}</span>
+                            {% endif %}
+                        </td>
+                        <td><code>{{ reserva.asiento or 'N/A' }}</code></td>
+                        <td>${{ "%.2f"|format(reserva.precio or 0) }}</td>
+                        <td>
+                            {% if reserva.estado == 'Confirmada' %}
+                            <span class="badge bg-success">{{ reserva.estado }}</span>
+                            {% elif reserva.estado == 'Cancelada' %}
+                            <span class="badge bg-danger">{{ reserva.estado }}</span>
+                            {% else %}
+                            <span class="badge bg-warning">{{ reserva.estado }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ reserva.fecha_reserva.strftime('%d/%m/%Y %H:%M') if reserva.fecha_reserva else 'N/A' }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editarModal{{ reserva.id_reserva }}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <a href="{{ url_for('eliminar_reserva', id=reserva.id_reserva) }}" 
+                               class="btn btn-sm btn-danger" 
+                               onclick="return confirm('¿Eliminar reserva de {{ reserva.pasajero_nombre }} en vuelo {{ reserva.id_vuelo }}?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    
+                    <!-- Modal de edición -->
+                    <div class="modal fade" id="editarModal{{ reserva.id_reserva }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Editar Reserva</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <form method="POST" action="{{ url_for('editar_reserva', id=reserva.id_reserva) }}">
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">Pasajero:</label>
+                                            <select name="id_pasajero" class="form-select" required>
+                                                {% for pasajero in pasajeros %}
+                                                <option value="{{ pasajero.id_pasajero }}" 
+                                                    {% if pasajero.id_pasajero == reserva.id_pasajero %}selected{% endif %}>
+                                                    {{ pasajero.nombre }} {{ pasajero.apellidos }} ({{ pasajero.pasaporte }})
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Vuelo:</label>
+                                            <select name="id_vuelo" class="form-select" required>
+                                                {% for vuelo in vuelos %}
+                                                <option value="{{ vuelo.id_vuelo }}" 
+                                                    {% if vuelo.id_vuelo == reserva.id_vuelo %}selected{% endif %}>
+                                                    {{ vuelo.id_vuelo }} - {{ vuelo.origen }} → {{ vuelo.destino }} 
+                                                    ({{ vuelo.fecha_salida.strftime('%d/%m/%Y %H:%M') }})
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Clase:</label>
+                                            <select name="clase" class="form-select" required>
+                                                <option value="Economica" {% if reserva.clase == 'Economica' %}selected{% endif %}>Económica</option>
+                                                <option value="Ejecutiva" {% if reserva.clase == 'Ejecutiva' %}selected{% endif %}>Ejecutiva</option>
+                                                <option value="Primera" {% if reserva.clase == 'Primera' %}selected{% endif %}>Primera Clase</option>
+                                            </select>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Asiento:</label>
+                                                <input type="text" name="asiento" class="form-control" value="{{ reserva.asiento or '' }}" placeholder="Ej: 12A">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Precio:</label>
+                                                <input type="number" step="0.01" name="precio" class="form-control" value="{{ reserva.precio or '' }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Estado:</label>
+                                            <select name="estado" class="form-select" required>
+                                                <option value="Confirmada" {% if reserva.estado == 'Confirmada' %}selected{% endif %}>Confirmada</option>
+                                                <option value="Cancelada" {% if reserva.estado == 'Cancelada' %}selected{% endif %}>Cancelada</option>
+                                                <option value="En espera" {% if reserva.estado == 'En espera' %}selected{% endif %}>En espera</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if reservas|length == 0 %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> No se encontraron reservas
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal para agregar reserva -->
+<div class="modal fade" id="agregarModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nueva Reserva</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('agregar_reserva') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Pasajero:</label>
+                        <select name="id_pasajero" class="form-select" required>
+                            <option value="">Seleccionar pasajero...</option>
+                            {% for pasajero in pasajeros %}
+                            <option value="{{ pasajero.id_pasajero }}">
+                                {{ pasajero.nombre }} {{ pasajero.apellidos }} ({{ pasajero.pasaporte }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Vuelo:</label>
+                        <select name="id_vuelo" class="form-select" required>
+                            <option value="">Seleccionar vuelo...</option>
+                            {% for vuelo in vuelos %}
+                            <option value="{{ vuelo.id_vuelo }}">
+                                {{ vuelo.id_vuelo }} - {{ vuelo.origen }} → {{ vuelo.destino }} 
+                                ({{ vuelo.fecha_salida.strftime('%d/%m/%Y %H:%M') }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Clase:</label>
+                        <select name="clase" class="form-select" required>
+                            <option value="Economica">Económica</option>
+                            <option value="Ejecutiva">Ejecutiva</option>
+                            <option value="Primera">Primera Clase</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Asiento:</label>
+                            <input type="text" name="asiento" class="form-control" placeholder="Ej: 12A">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Precio:</label>
+                            <input type="number" step="0.01" name="precio" class="form-control" value="1000.00" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Estado:</label>
+                        <select name="estado" class="form-select" required>
+                            <option value="Confirmada" selected>Confirmada</option>
+                            <option value="Cancelada">Cancelada</option>
+                            <option value="En espera">En espera</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
