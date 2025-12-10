@@ -1,82 +1,149 @@
 {% extends "base.html" %}
-
-{% block title %}Nuevo Pasajero{% endblock %}
-{% block header %}Crear Nuevo Pasajero{% endblock %}
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ url_for('admin_pasajeros') }}">Pasajeros</a></li>
-    <li class="breadcrumb-item active">Nuevo</li>
-{% endblock %}
-
-{% block actions %}
-    <a href="{{ url_for('admin_pasajeros') }}" class="btn btn-secondary">
-        <i class="bi bi-arrow-left"></i> Volver
-    </a>
-{% endblock %}
-
+{% block title %}Crear Pasajero{% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Información del Pasajero</h5>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-plus me-2"></i>
+                        Registrar Nuevo Pasajero
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('crear_pasajero') }}">
+                        <h6 class="mb-3 border-bottom pb-2">
+                            <i class="bi bi-person-badge me-2"></i>
+                            Información Personal
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nombre" class="form-label">
+                                    <span class="text-danger">*</span> Nombre(s)
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="nombre" 
+                                       name="nombre" 
+                                       required
+                                       placeholder="Ej: Juan Carlos">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="apellidos" class="form-label">
+                                    <span class="text-danger">*</span> Apellidos
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="apellidos" 
+                                       name="apellidos" 
+                                       required
+                                       placeholder="Ej: Pérez García">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="pasaporte" class="form-label">
+                                    <span class="text-danger">*</span> Número de Pasaporte
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="pasaporte" 
+                                       name="pasaporte" 
+                                       required
+                                       placeholder="Ej: A12345678">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="FechNac" class="form-label">
+                                    Fecha de Nacimiento
+                                </label>
+                                <input type="date" 
+                                       class="form-control" 
+                                       id="FechNac" 
+                                       name="FechNac">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="vuelo" class="form-label">
+                                    Vuelo Asignado
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="vuelo" 
+                                       name="vuelo" 
+                                       placeholder="Ej: AA123, DL456">
+                            </div>
+                        </div>
+                        
+                        <h6 class="mt-4 mb-3 border-bottom pb-2">
+                            <i class="bi bi-telephone me-2"></i>
+                            Información de Contacto
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="correo" class="form-label">
+                                    Correo Electrónico
+                                </label>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="correo" 
+                                       name="correo" 
+                                       placeholder="ejemplo@correo.com">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="telefono" class="form-label">
+                                    Teléfono
+                                </label>
+                                <input type="tel" 
+                                       class="form-control" 
+                                       id="telefono" 
+                                       name="telefono" 
+                                       placeholder="Ej: +52 555 123 4567">
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('admin_pasajeros') }}" 
+                                       class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>
+                                        Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-person-plus me-1"></i>
+                                        Registrar Pasajero
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="card-body">
-                <form method="POST">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="nombre" class="form-label">Nombre *</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" 
-                                   placeholder="Ej: Juan" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="apellidos" class="form-label">Apellidos *</label>
-                            <input type="text" class="form-control" id="apellidos" name="apellidos" 
-                                   placeholder="Ej: Pérez García" required>
-                        </div>
+            
+            <!-- Información adicional -->
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Consideraciones Importantes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-exclamation-diamond me-2"></i>Para tener en cuenta:</h6>
+                        <ul class="mb-0">
+                            <li>El número de pasaporte debe ser único para cada pasajero</li>
+                            <li>El vuelo asignado puede ser actualizado posteriormente</li>
+                            <li>La información de contacto es importante para notificaciones</li>
+                            <li>Después de registrar al pasajero, podrás crear reservas a su nombre</li>
+                        </ul>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="pasaporte" class="form-label">Pasaporte *</label>
-                            <input type="text" class="form-control" id="pasaporte" name="pasaporte" 
-                                   placeholder="Ej: AB123456" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="vuelo" class="form-label">Número de Vuelo</label>
-                            <input type="text" class="form-control" id="vuelo" name="vuelo" 
-                                   placeholder="Ej: AA123">
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="FechNac" class="form-label">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="FechNac" name="FechNac">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="correo" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="correo" name="correo" 
-                                   placeholder="ejemplo@correo.com">
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="telefono" class="form-label">Teléfono</label>
-                            <input type="text" class="form-control" id="telefono" name="telefono" 
-                                   placeholder="+34 600 000 000">
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-check-circle"></i> Crear Pasajero
-                        </button>
-                        <a href="{{ url_for('admin_pasajeros') }}" class="btn btn-secondary">
-                            <i class="bi bi-x-circle"></i> Cancelar
-                        </a>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
