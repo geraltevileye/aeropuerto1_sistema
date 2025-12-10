@@ -1,229 +1,195 @@
 {% extends "base.html" %}
-
 {% block title %}Dashboard{% endblock %}
-{% block header %}Dashboard{% endblock %}
-{% block breadcrumb %}
-    <li class="breadcrumb-item active">Dashboard</li>
-{% endblock %}
-
-{% block actions %}
-    <div class="btn-group">
-        <button type="button" class="btn btn-primary">
-            <i class="bi bi-calendar-plus"></i> Nuevo Vuelo
-        </button>
-        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" 
-                data-bs-toggle="dropdown">
-        </button>
-        <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{{ url_for('crear_reserva') }}">
-                <i class="bi bi-plus-circle"></i> Nueva Reserva
-            </a></li>
-            <li><a class="dropdown-item" href="{{ url_for('crear_pasajero') }}">
-                <i class="bi bi-person-plus"></i> Nuevo Pasajero
-            </a></li>
-        </ul>
-    </div>
-{% endblock %}
-
 {% block content %}
-<div class="row mb-4">
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="bi bi-speedometer2 me-2"></i>
+            Dashboard
+        </h1>
+        <span class="badge bg-primary fs-6">Sistema Aeroportuario</span>
+    </div>
+    
     <!-- Estadísticas -->
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card stat-card vuelos h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title text-muted">Vuelos Hoy</h5>
-                        <h2 class="mb-0">{{ vuelos_hoy }}</h2>
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card blue">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">VUELOS HOY</h6>
+                            <h2 class="text-white">{{ vuelos_hoy }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-airplane-fill fs-1"></i>
+                        </div>
                     </div>
-                    <div class="align-self-center">
-                        <i class="bi bi-airplane text-primary" style="font-size: 2rem;"></i>
-                    </div>
+                    <p class="card-text text-white-50 mb-0">Programados para hoy</p>
                 </div>
-                <a href="{{ url_for('consulta_vuelos_hoy') }}" class="btn btn-sm btn-outline-primary mt-3">
-                    Ver Detalles <i class="bi bi-arrow-right"></i>
-                </a>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card green">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">AEROLÍNEAS</h6>
+                            <h2 class="text-white">{{ total_aerolineas }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-building fs-1"></i>
+                        </div>
+                    </div>
+                    <p class="card-text text-white-50 mb-0">Aerolíneas registradas</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card orange">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">PASAJEROS</h6>
+                            <h2 class="text-white">{{ total_pasajeros }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-people-fill fs-1"></i>
+                        </div>
+                    </div>
+                    <p class="card-text text-white-50 mb-0">Total de pasajeros</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card red">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">RESERVAS</h6>
+                            <h2 class="text-white">{{ total_reservas }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-ticket-perforated-fill fs-1"></i>
+                        </div>
+                    </div>
+                    <p class="card-text text-white-50 mb-0">Reservas confirmadas</p>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card stat-card aerolineas h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title text-muted">Aerolíneas</h5>
-                        <h2 class="mb-0">{{ total_aerolineas }}</h2>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="bi bi-building text-success" style="font-size: 2rem;"></i>
+    <!-- Acciones Rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning-charge me-2"></i>
+                        Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if session.rol == 'admin' %}
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('admin_aerolineas') }}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="bi bi-plus-circle fs-4 d-block mb-2"></i>
+                                Nueva Aerolínea
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('admin_pasajeros') }}" class="btn btn-outline-success w-100 py-3">
+                                <i class="bi bi-person-plus fs-4 d-block mb-2"></i>
+                                Nuevo Pasajero
+                            </a>
+                        </div>
+                        {% endif %}
+                        
+                        {% if session.rol in ['admin', 'responsable'] %}
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('responsable_vuelos') }}" class="btn btn-outline-warning w-100 py-3">
+                                <i class="bi bi-calendar-plus fs-4 d-block mb-2"></i>
+                                Nuevo Vuelo
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('responsable_reservas') }}" class="btn btn-outline-info w-100 py-3">
+                                <i class="bi bi-ticket-detailed fs-4 d-block mb-2"></i>
+                                Nueva Reserva
+                            </a>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
-                <a href="{{ url_for('admin_aerolineas') }}" class="btn btn-sm btn-outline-success mt-3">
-                    Gestionar <i class="bi bi-arrow-right"></i>
-                </a>
             </div>
         </div>
     </div>
     
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card stat-card pasajeros h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title text-muted">Pasajeros</h5>
-                        <h2 class="mb-0">{{ total_pasajeros }}</h2>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="bi bi-people text-warning" style="font-size: 2rem;"></i>
-                    </div>
+    <!-- Información del Usuario -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-circle me-2"></i>
+                        Información de Sesión
+                    </h5>
                 </div>
-                <a href="{{ url_for('admin_pasajeros') }}" class="btn btn-sm btn-outline-warning mt-3">
-                    Ver Lista <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card stat-card reservas h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title text-muted">Reservas Activas</h5>
-                        <h2 class="mb-0">{{ total_reservas }}</h2>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="bi bi-ticket-perforated text-purple" style="font-size: 2rem;"></i>
-                    </div>
-                </div>
-                <a href="{{ url_for('responsable_reservas') }}" class="btn btn-sm btn-outline-purple mt-3">
-                    Ver Reservas <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Acciones Rápidas -->
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-lightning-charge text-warning me-2"></i>Acciones Rápidas</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    {% if session.rol == 'admin' %}
-                    <div class="col-md-3 mb-3">
-                        <a href="{{ url_for('crear_aerolinea') }}" class="btn btn-outline-primary w-100 h-100 py-3">
-                            <i class="bi bi-building fs-1 mb-2 d-block"></i>
-                            Nueva Aerolínea
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <a href="{{ url_for('crear_pasajero') }}" class="btn btn-outline-success w-100 h-100 py-3">
-                            <i class="bi bi-person-plus fs-1 mb-2 d-block"></i>
-                            Nuevo Pasajero
-                        </a>
-                    </div>
-                    {% endif %}
-                    
-                    {% if session.rol in ['admin', 'responsable'] %}
-                    <div class="col-md-3 mb-3">
-                        <a href="{{ url_for('crear_vuelo') }}" class="btn btn-outline-info w-100 h-100 py-3">
-                            <i class="bi bi-airplane fs-1 mb-2 d-block"></i>
-                            Nuevo Vuelo
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <a href="{{ url_for('crear_reserva') }}" class="btn btn-outline-warning w-100 h-100 py-3">
-                            <i class="bi bi-ticket-perforated fs-1 mb-2 d-block"></i>
-                            Nueva Reserva
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
-    .text-purple { color: #9d4edd; }
-    .btn-outline-purple { 
-        color: #9d4edd;
-        border-color: #9d4edd;
-    }
-    .btn-outline-purple:hover {
-        background-color: #9d4edd;
-        color: white;
-    }
-</style>
-{% endblock %}                                <h5><i class="bi bi-people"></i> Pasajeros</h5>
-                                <h2>{{ total_pasajeros }}</h2>
-                            </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-person-badge fs-1 text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5>{{ username }}</h5>
+                            <p class="mb-1"><strong>Rol:</strong> <span class="badge bg-primary">{{ rol }}</span></p>
+                            <p class="mb-1"><strong>Permisos:</strong> 
+                                {% if rol == 'admin' %}
+                                    Administrador Completo
+                                {% elif rol == 'responsable' %}
+                                    Gestión de Vuelos/Reservas
+                                {% endif %}
+                            </p>
+                            <small class="text-muted">
+                                <i class="bi bi-clock me-1"></i>
+                                Último acceso: {{ session.get('last_login', 'Hoy') }}
+                            </small>
                         </div>
                     </div>
                 </div>
-                
-                <hr class="my-4">
-                
-                <h5>Accesos rápidos:</h5>
-                <!-- En la sección de accesos rápidos, agregar: -->
-{% if rol in ['admin', 'responsable'] %}
-<div class="col-md-3 mb-2">
-    <a href="{{ url_for('responsable_reservas') }}" class="btn btn-info w-100">
-        <i class="bi bi-ticket-perforated"></i> Reservas
-    </a>
-</div>
-<div class="col-md-3 mb-2">
-    <a href="{{ url_for('responsable_equipaje') }}" class="btn btn-secondary w-100">
-        <i class="bi bi-suitcase"></i> Equipaje
-    </a>
-</div>
-{% endif %}
-                <div class="row">
-                    {% if rol == 'admin' %}
-                    <div class="col-md-3 mb-2">
-                        <a href="{{ url_for('admin_aerolineas') }}" class="btn btn-primary w-100">
-                            <i class="bi bi-building"></i> Aerolíneas
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <a href="{{ url_for('admin_pasajeros') }}" class="btn btn-success w-100">
-                            <i class="bi bi-people"></i> Pasajeros
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <a href="{{ url_for('admin_usuarios') }}" class="btn btn-info w-100">
-                            <i class="bi bi-person-badge"></i> Usuarios
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <a href="{{ url_for('ver_logs') }}" class="btn btn-secondary w-100">
-                            <i class="bi bi-journal-text"></i> Logs
-                        </a>
-                    </div>
-                    {% endif %}
-                    
-                    {% if rol in ['admin', 'responsable'] %}
-                    <div class="col-md-3 mb-2">
-                        <a href="{{ url_for('responsable_vuelos') }}" class="btn btn-warning w-100">
-                            <i class="bi bi-airplane"></i> Vuelos
-                        </a>
-                    </div>
-                    {% endif %}
-                    
-                    <div class="col-md-3 mb-2">
-                        <a href="{{ url_for('consulta_vuelos_hoy') }}" class="btn btn-primary w-100">
-                            <i class="bi bi-calendar-check"></i> Vuelos Hoy
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <a href="{{ url_for('consulta_pasajeros') }}" class="btn btn-success w-100">
-                            <i class="bi bi-people"></i> Ver Pasajeros
-                        </a>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Acerca del Sistema
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6>Sistema de Gestión Aeroportuaria</h6>
+                    <p class="mb-3">
+                        Plataforma para la administración completa de operaciones aeroportuarias.
+                        Desarrollado con Flask, PostgreSQL y Bootstrap 5.
+                    </p>
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted">
+                                <i class="bi bi-database me-1"></i>
+                                PostgreSQL
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">
+                                <i class="bi bi-cloud me-1"></i>
+                                Render.com
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>
