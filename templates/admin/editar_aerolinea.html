@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Aerolínea{% endblock %}
+{% block header %}Editar Aerolínea{% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ url_for('admin_aerolineas') }}">Aerolíneas</a></li>
+    <li class="breadcrumb-item active">Editar</li>
+{% endblock %}
+
+{% block actions %}
+    <a href="{{ url_for('admin_aerolineas') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Editar Aerolínea: {{ aerolinea.nombre }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nombre" class="form-label">Nombre *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" 
+                                   value="{{ aerolinea.nombre }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="codigo_IATA" class="form-label">Código IATA *</label>
+                            <input type="text" class="form-control" id="codigo_IATA" name="codigo_IATA" 
+                                   value="{{ aerolinea.codigo_IATA }}" maxlength="2" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="pais_origen" class="form-label">País de Origen</label>
+                            <input type="text" class="form-control" id="pais_origen" name="pais_origen" 
+                                   value="{{ aerolinea.pais_origen or '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="fecha_fundacion" class="form-label">Fecha de Fundación</label>
+                            <input type="date" class="form-control" id="fecha_fundacion" name="fecha_fundacion" 
+                                   value="{{ aerolinea.fecha_fundacion.strftime('%Y-%m-%d') if aerolinea.fecha_fundacion else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Guardar Cambios
+                        </button>
+                        <a href="{{ url_for('admin_aerolineas') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
