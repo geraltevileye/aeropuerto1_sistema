@@ -1,93 +1,299 @@
 {% extends "base.html" %}
-
-{% block title %}Editar Reserva{% endblock %}
-{% block header %}Editar Reserva: {{ reserva.id_reserva }}{% endblock %}
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ url_for('responsable_reservas') }}">Reservas</a></li>
-    <li class="breadcrumb-item active">Editar</li>
-{% endblock %}
-
-{% block actions %}
-    <a href="{{ url_for('responsable_reservas') }}" class="btn btn-secondary">
-        <i class="bi bi-arrow-left"></i> Volver
-    </a>
-{% endblock %}
-
+{% block title %}Gestión de Reservas{% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-10">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Editar Información de la Reserva</h5>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="bi bi-ticket-perforated me-2"></i>
+            Gestión de Reservas
+        </h1>
+        <a href="{{ url_for('crear_reserva') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>
+            Nueva Reserva
+        </a>
+    </div>
+    
+    <!-- Estadísticas Rápidas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center py-3">
+                    <h6>Confirmadas</h6>
+                    <h3>{{ reservas|selectattr('estado', 'equalto', 'Confirmada')|list|length }}</h3>
+                </div>
             </div>
-            <div class="card-body">
-                <form method="POST">
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center py-3">
+                    <h6>En Proceso</h6>
+                    <h3>{{ reservas|selectattr('estado', 'equalto', 'En proceso')|list|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center py-3">
+                    <h6>Pendientes</h6>
+                    <h3>{{ reservas|selectattr('estado', 'equalto', 'Pendiente')|list|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center py-3">
+                    <h6>Canceladas</h6>
+                    <h3>{{ reservas|selectattr('estado', 'equalto', 'Cancelada')|list|length }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tabla de Reservas -->
+    <div class="card">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">
+                <i class="bi bi-list-ul me-2"></i>
+                Lista de Reservas ({{ reservas|length }})
+            </h6>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" 
+                        data-bs-toggle="dropdown">
+                    <i class="bi bi-filter me-1"></i> Filtrar
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Todas</a></li>
+                    <li><a class="dropdown-item" href="#">Confirmadas</a></li>
+                    <li><a class="dropdown-item" href="#">Pendientes</a></li>
+                    <li><a class="dropdown-item" href="#">Canceladas</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">Hoy</a></li>
+                    <li><a class="dropdown-item" href="#">Esta semana</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Pasajero</th>
+                            <th>Vuelo</th>
+                            <th>Clase</th>
+                            <th>Asiento</th>
+                            <th>Precio</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if reservas %}
+                            {% for reserva in reservas %}
+                            <tr>
+                                <td>{{ reserva.id_reserva }}</td>
+                                <td>
+                                    <strong>{{ reserva.nombre }} {{ reserva.apellidos }}</strong>
+                                    <br>
+                                    <small class="text-muted">ID: {{ reserva.id_pasajero }}</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold">{{ reserva.id_vuelo }}</span>
+                                        <small class="text-muted">
+                                            {{ reserva.origen }} → {{ reserva.destino }}
+                                        </small>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if reserva.clase == 'Primera' %}
+                                    <span class="badge bg-success">{{ reserva.clase }}</span>
+                                    {% elif reserva.clase == 'Ejecutiva' %}
+                                    <span class="badge bg-primary">{{ reserva.clase }}</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ reserva.clase or 'Económica' }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if reserva.asiento %}
+                                    <span class="badge bg-dark">{{ reserva.asiento }}</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if reserva.precio %}
+                                    <span class="fw-bold">${{ "%.2f"|format(reserva.precio) }}</span>
+                                    {% else %}
+                                    <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% set estado_colors = {
+                                        'Confirmada': 'success',
+                                        'Pendiente': 'warning',
+                                        'En proceso': 'info',
+                                        'Cancelada': 'danger'
+                                    } %}
+                                    {% set color = estado_colors.get(reserva.estado, 'secondary') %}
+                                    <span class="badge bg-{{ color }}">{{ reserva.estado }}</span>
+                                </td>
+                                <td>
+                                    {% if reserva.fecha_reserva %}
+                                    {{ reserva.fecha_reserva.strftime('%d/%m/%Y') }}
+                                    <br>
+                                    <small class="text-muted">{{ reserva.fecha_reserva.strftime('%H:%M') }}</small>
+                                    {% else %}
+                                    N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{{ url_for('editar_reserva', id=reserva.id_reserva) }}" 
+                                           class="btn btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{{ url_for('eliminar_reserva', id=reserva.id_reserva) }}" 
+                                           class="btn btn-outline-danger"
+                                           onclick="return confirmarEliminacion('¿Eliminar reserva #{{ reserva.id_reserva }}?')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                        <button class="btn btn-outline-info" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="9" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="bi bi-ticket-detailed fs-1"></i>
+                                        <p class="mt-2">No hay reservas registradas</p>
+                                        <a href="{{ url_for('crear_reserva') }}" class="btn btn-primary mt-2">
+                                            <i class="bi bi-plus-circle me-1"></i>
+                                            Crear Primera Reserva
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="row">
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Total reservas: {{ reservas|length }} | 
+                        Total ingresos: ${{ "%.2f"|format(reservas|sum(attribute='precio') or 0) }}
+                    </small>
+                </div>
+                <div class="col-md-6 text-end">
+                    <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i>
+                        Última actualización: {{ now.strftime('%H:%M:%S') }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Resumen por Clase -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="bi bi-graph-up me-2"></i>
+                        Reservas por Clase
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Económica</span>
+                            <strong>{{ reservas|selectattr('clase', 'equalto', 'Económica')|list|length }}</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Ejecutiva</span>
+                            <strong>{{ reservas|selectattr('clase', 'equalto', 'Ejecutiva')|list|length }}</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Primera</span>
+                            <strong>{{ reservas|selectattr('clase', 'equalto', 'Primera')|list|length }}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="bi bi-calendar me-2"></i>
+                        Reservas Recientes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for reserva in reservas[:3] %}
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="flex-shrink-0">
+                            <i class="bi bi-person-circle text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-2">
+                            <small class="d-block">{{ reserva.nombre }} {{ reserva.apellidos[:10] }}...</small>
+                            <small class="text-muted">{{ reserva.id_vuelo }}</small>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="badge bg-{{ 'success' if reserva.estado == 'Confirmada' else 'warning' }}">
+                                {{ reserva.estado[:3] }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="bi bi-currency-dollar me-2"></i>
+                        Resumen Financiero
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <h4>${{ "%.2f"|format(reservas|sum(attribute='precio') or 0) }}</h4>
+                        <small class="text-muted">Total de reservas</small>
+                    </div>
+                    <div class="progress mb-2" style="height: 10px;">
+                        <div class="progress-bar bg-success" style="width: 60%"></div>
+                        <div class="progress-bar bg-primary" style="width: 25%"></div>
+                        <div class="progress-bar bg-warning" style="width: 15%"></div>
+                    </div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="id_pasajero" class="form-label">Pasajero *</label>
-                            <select class="form-control" id="id_pasajero" name="id_pasajero" required>
-                                {% for p in pasajeros %}
-                                <option value="{{ p.id_pasajero }}" 
-                                    {% if reserva.id_pasajero == p.id_pasajero %}selected{% endif %}>
-                                    {{ p.nombre }} {{ p.apellidos }} ({{ p.pasaporte }})
-                                </option>
-                                {% endfor %}
-                            </select>
+                        <div class="col-4 text-center">
+                            <small class="d-block">Confirm.</small>
+                            <small class="fw-bold">60%</small>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="id_vuelo" class="form-label">Vuelo *</label>
-                            <select class="form-control" id="id_vuelo" name="id_vuelo" required>
-                                {% for v in vuelos %}
-                                <option value="{{ v.id_vuelo }}" 
-                                    {% if reserva.id_vuelo == v.id_vuelo %}selected{% endif %}>
-                                    {{ v.id_vuelo }}: {{ v.origen }} → {{ v.destino }}
-                                </option>
-                                {% endfor %}
-                            </select>
+                        <div class="col-4 text-center">
+                            <small class="d-block">Pend.</small>
+                            <small class="fw-bold">25%</small>
+                        </div>
+                        <div class="col-4 text-center">
+                            <small class="d-block">Proc.</small>
+                            <small class="fw-bold">15%</small>
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="clase" class="form-label">Clase *</label>
-                            <select class="form-control" id="clase" name="clase" required>
-                                <option value="Economica" {% if reserva.clase == 'Economica' %}selected{% endif %}>Económica</option>
-                                <option value="Ejecutiva" {% if reserva.clase == 'Ejecutiva' %}selected{% endif %}>Ejecutiva</option>
-                                <option value="Primera" {% if reserva.clase == 'Primera' %}selected{% endif %}>Primera Clase</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="asiento" class="form-label">Asiento</label>
-                            <input type="text" class="form-control" id="asiento" name="asiento" 
-                                   value="{{ reserva.asiento or '' }}">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="precio" class="form-label">Precio (€)</label>
-                            <input type="number" class="form-control" id="precio" name="precio" 
-                                   value="{{ reserva.precio or '' }}" step="0.01">
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="estado" class="form-label">Estado *</label>
-                            <select class="form-control" id="estado" name="estado" required>
-                                <option value="Confirmada" {% if reserva.estado == 'Confirmada' %}selected{% endif %}>Confirmada</option>
-                                <option value="En espera" {% if reserva.estado == 'En espera' %}selected{% endif %}>En espera</option>
-                                <option value="Cancelada" {% if reserva.estado == 'Cancelada' %}selected{% endif %}>Cancelada</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save"></i> Guardar Cambios
-                        </button>
-                        <a href="{{ url_for('responsable_reservas') }}" class="btn btn-secondary">
-                            <i class="bi bi-x-circle"></i> Cancelar
-                        </a>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
