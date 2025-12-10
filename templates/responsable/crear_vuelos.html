@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% block title %}Crear Vuelo{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-plus me-2"></i>
+                        Programar Nuevo Vuelo
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('crear_vuelo') }}">
+                        <div class="row">
+                            <!-- Información Básica -->
+                            <div class="col-md-6 mb-3">
+                                <label for="id_vuelo" class="form-label">
+                                    <span class="text-danger">*</span> ID del Vuelo
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="id_vuelo" 
+                                       name="id_vuelo" 
+                                       required
+                                       placeholder="Ej: AA123, DL456"
+                                       style="text-transform: uppercase;">
+                                <div class="form-text">Código único del vuelo (máx. 10 caracteres)</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="id_aerolinea" class="form-label">
+                                    Aerolínea
+                                </label>
+                                <select class="form-select" id="id_aerolinea" name="id_aerolinea">
+                                    <option value="">Seleccionar Aerolínea</option>
+                                    {% for aerolinea in aerolineas %}
+                                    <option value="{{ aerolinea.id_aerolinea }}">
+                                        {{ aerolinea.nombre }} ({{ aerolinea.codigo_IATA or 'Sin código' }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">Opcional - Se puede asignar después</div>
+                            </div>
+                            
+                            <!-- Origen y Destino -->
+                            <div class="col-md-6 mb-3">
+                                <label for="origen" class="form-label">
+                                    <span class="text-danger">*</span> Aeropuerto de Origen
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="origen" 
+                                       name="origen" 
+                                       required
+                                       placeholder="Ej: MEX, JFK, MAD">
+                                <div class="form-text">Código IATA del aeropuerto</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="destino" class="form-label">
+                                    <span class="text-danger">*</span> Aeropuerto de Destino
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="destino" 
+                                       name="destino" 
+                                       required
+                                       placeholder="Ej: LAX, CDG, AMS">
+                                <div class="form-text">Código IATA del aeropuerto</div>
+                            </div>
+                            
+                            <!-- Fechas -->
+                            <div class="col-md-6 mb-3">
+                                <label for="fecha_salida" class="form-label">
+                                    <span class="text-danger">*</span> Fecha y Hora de Salida
+                                </label>
+                                <input type="datetime-local" 
+                                       class="form-control" 
+                                       id="fecha_salida" 
+                                       name="fecha_salida" 
+                                       required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="fecha_llegada" class="form-label">
+                                    <span class="text-danger">*</span> Fecha y Hora de Llegada
+                                </label>
+                                <input type="datetime-local" 
+                                       class="form-control" 
+                                       id="fecha_llegada" 
+                                       name="fecha_llegada" 
+                                       required>
+                            </div>
+                            
+                            <!-- Estado y Puerta -->
+                            <div class="col-md-6 mb-3">
+                                <label for="estado" class="form-label">
+                                    <span class="text-danger">*</span> Estado del Vuelo
+                                </label>
+                                <select class="form-select" id="estado" name="estado" required>
+                                    <option value="programado" selected>Programado</option>
+                                    <option value="en_vuelo">En Vuelo</option>
+                                    <option value="aterrizado">Aterrizado</option>
+                                    <option value="demorado">Demorado</option>
+                                    <option value="cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="puerta_embarque" class="form-label">
+                                    Puerta de Embarque
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="puerta_embarque" 
+                                       name="puerta_embarque" 
+                                       placeholder="Ej: A12, B5, C8">
+                                <div class="form-text">Opcional - Se puede actualizar después</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('responsable_vuelos') }}" 
+                                       class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>
+                                        Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-calendar-check me-1"></i>
+                                        Programar Vuelo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Información adicional -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Tipos de Estado
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <span class="badge bg-secondary me-2">Programado</span>
+                                    <small>Vuelo planificado pero no iniciado</small>
+                                </li>
+                                <li class="mb-2">
+                                    <span class="badge bg-primary me-2">En Vuelo</span>
+                                    <small>Vuelo en curso</small>
+                                </li>
+                                <li class="mb-2">
+                                    <span class="badge bg-success me-2">Aterrizado</span>
+                                    <small>Vuelo completado</small>
+                                </li>
+                                <li class="mb-2">
+                                    <span class="badge bg-warning me-2">Demorado</span>
+                                    <small>Vuelo retrasado</small>
+                                </li>
+                                <li>
+                                    <span class="badge bg-danger me-2">Cancelado</span>
+                                    <small>Vuelo cancelado</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="bi bi-lightbulb me-2"></i>
+                                Recomendaciones
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <h6><i class="bi bi-check-circle me-2"></i>Buenas prácticas:</h6>
+                                <ul class="mb-0">
+                                    <li>Verifica que el ID del vuelo sea único</li>
+                                    <li>Confirma las horas de salida y llegada</li>
+                                    <li>Asigna la puerta de embarque cuando esté disponible</li>
+                                    <li>Actualiza el estado según la situación real</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Establecer fechas por defecto
+    document.addEventListener('DOMContentLoaded', function() {
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        // Formatear para datetime-local
+        const formatForInput = (date) => {
+            const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+            return local.toISOString().slice(0, 16);
+        };
+        
+        document.getElementById('fecha_salida').value = formatForInput(tomorrow);
+        document.getElementById('fecha_llegada').value = formatForInput(
+            new Date(tomorrow.getTime() + 2 * 60 * 60 * 1000) // +2 horas
+        );
+    });
+</script>
+{% endblock %}
