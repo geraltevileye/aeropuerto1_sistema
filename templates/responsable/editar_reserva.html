@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Reserva{% endblock %}
+{% block header %}Editar Reserva: {{ reserva.id_reserva }}{% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ url_for('responsable_reservas') }}">Reservas</a></li>
+    <li class="breadcrumb-item active">Editar</li>
+{% endblock %}
+
+{% block actions %}
+    <a href="{{ url_for('responsable_reservas') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Editar Información de la Reserva</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_pasajero" class="form-label">Pasajero *</label>
+                            <select class="form-control" id="id_pasajero" name="id_pasajero" required>
+                                {% for p in pasajeros %}
+                                <option value="{{ p.id_pasajero }}" 
+                                    {% if reserva.id_pasajero == p.id_pasajero %}selected{% endif %}>
+                                    {{ p.nombre }} {{ p.apellidos }} ({{ p.pasaporte }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_vuelo" class="form-label">Vuelo *</label>
+                            <select class="form-control" id="id_vuelo" name="id_vuelo" required>
+                                {% for v in vuelos %}
+                                <option value="{{ v.id_vuelo }}" 
+                                    {% if reserva.id_vuelo == v.id_vuelo %}selected{% endif %}>
+                                    {{ v.id_vuelo }}: {{ v.origen }} → {{ v.destino }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="clase" class="form-label">Clase *</label>
+                            <select class="form-control" id="clase" name="clase" required>
+                                <option value="Economica" {% if reserva.clase == 'Economica' %}selected{% endif %}>Económica</option>
+                                <option value="Ejecutiva" {% if reserva.clase == 'Ejecutiva' %}selected{% endif %}>Ejecutiva</option>
+                                <option value="Primera" {% if reserva.clase == 'Primera' %}selected{% endif %}>Primera Clase</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="asiento" class="form-label">Asiento</label>
+                            <input type="text" class="form-control" id="asiento" name="asiento" 
+                                   value="{{ reserva.asiento or '' }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="precio" class="form-label">Precio (€)</label>
+                            <input type="number" class="form-control" id="precio" name="precio" 
+                                   value="{{ reserva.precio or '' }}" step="0.01">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="estado" class="form-label">Estado *</label>
+                            <select class="form-control" id="estado" name="estado" required>
+                                <option value="Confirmada" {% if reserva.estado == 'Confirmada' %}selected{% endif %}>Confirmada</option>
+                                <option value="En espera" {% if reserva.estado == 'En espera' %}selected{% endif %}>En espera</option>
+                                <option value="Cancelada" {% if reserva.estado == 'Cancelada' %}selected{% endif %}>Cancelada</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Guardar Cambios
+                        </button>
+                        <a href="{{ url_for('responsable_reservas') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
