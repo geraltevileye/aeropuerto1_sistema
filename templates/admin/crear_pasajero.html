@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Pasajero{% endblock %}
+{% block header %}Crear Nuevo Pasajero{% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ url_for('admin_pasajeros') }}">Pasajeros</a></li>
+    <li class="breadcrumb-item active">Nuevo</li>
+{% endblock %}
+
+{% block actions %}
+    <a href="{{ url_for('admin_pasajeros') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Información del Pasajero</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nombre" class="form-label">Nombre *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" 
+                                   placeholder="Ej: Juan" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="apellidos" class="form-label">Apellidos *</label>
+                            <input type="text" class="form-control" id="apellidos" name="apellidos" 
+                                   placeholder="Ej: Pérez García" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="pasaporte" class="form-label">Pasaporte *</label>
+                            <input type="text" class="form-control" id="pasaporte" name="pasaporte" 
+                                   placeholder="Ej: AB123456" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="vuelo" class="form-label">Número de Vuelo</label>
+                            <input type="text" class="form-control" id="vuelo" name="vuelo" 
+                                   placeholder="Ej: AA123">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="FechNac" class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" class="form-control" id="FechNac" name="FechNac">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="correo" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="correo" name="correo" 
+                                   placeholder="ejemplo@correo.com">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="telefono" name="telefono" 
+                                   placeholder="+34 600 000 000">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Crear Pasajero
+                        </button>
+                        <a href="{{ url_for('admin_pasajeros') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
