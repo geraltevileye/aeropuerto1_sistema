@@ -1,85 +1,260 @@
 {% extends "base.html" %}
-
 {% block title %}Editar Equipaje{% endblock %}
-{% block header %}Editar Equipaje: {{ equipaje.id_equipaje }}{% endblock %}
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ url_for('responsable_equipaje') }}">Equipaje</a></li>
-    <li class="breadcrumb-item active">Editar</li>
-{% endblock %}
-
-{% block actions %}
-    <a href="{{ url_for('responsable_equipaje') }}" class="btn btn-secondary">
-        <i class="bi bi-arrow-left"></i> Volver
-    </a>
-{% endblock %}
-
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Editar Información del Equipaje</h5>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pencil me-2"></i>
+                        Editar Equipaje #{{ equipaje.id_equipaje }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('editar_equipaje', id=equipaje.id_equipaje) }}">
+                        <div class="row">
+                            <!-- Información del Equipaje -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">ID de Equipaje</label>
+                                <input type="text" 
+                                       class="form-control bg-light" 
+                                       value="{{ equipaje.id_equipaje }}"
+                                       readonly>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Fecha de Registro</label>
+                                <input type="text" 
+                                       class="form-control bg-light" 
+                                       value="{{ equipaje.fecha_registro.strftime('%d/%m/%Y %H:%M') if equipaje.fecha_registro else 'N/A' }}"
+                                       readonly>
+                            </div>
+                            
+                            <!-- Selección de Pasajero -->
+                            <div class="col-md-6 mb-3">
+                                <label for="id_pasajero" class="form-label">
+                                    <span class="text-danger">*</span> Pasajero
+                                </label>
+                                <select class="form-select" id="id_pasajero" name="id_pasajero" required>
+                                    <option value="">Seleccionar Pasajero</option>
+                                    {% for pasajero in pasajeros %}
+                                    <option value="{{ pasajero.id_pasajero }}"
+                                            {% if equipaje.id_pasajero == pasajero.id_pasajero %}selected{% endif %}>
+                                        {{ pasajero.apellidos }}, {{ pasajero.nombre }} - {{ pasajero.pasaporte }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Selección de Vuelo -->
+                            <div class="col-md-6 mb-3">
+                                <label for="id_vuelo" class="form-label">
+                                    <span class="text-danger">*</span> Vuelo
+                                </label>
+                                <select class="form-select" id="id_vuelo" name="id_vuelo" required>
+                                    <option value="">Seleccionar Vuelo</option>
+                                    {% for vuelo in vuelos %}
+                                    <option value="{{ vuelo.id_vuelo }}"
+                                            {% if equipaje.id_vuelo == vuelo.id_vuelo %}selected{% endif %}>
+                                        {{ vuelo.id_vuelo }} - {{ vuelo.origen }} → {{ vuelo.destino }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Peso del Equipaje -->
+                            <div class="col-md-4 mb-3">
+                                <label for="peso_kg" class="form-label">
+                                    Peso (kg)
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="peso_kg" 
+                                           name="peso_kg" 
+                                           step="0.1"
+                                           min="0"
+                                           max="100"
+                                           value="{{ equipaje.peso_kg or '' }}"
+                                           placeholder="Ej: 23.5">
+                                    <span class="input-group-text">kg</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Tipo de Equipaje -->
+                            <div class="col-md-4 mb-3">
+                                <label for="tipo" class="form-label">
+                                    <span class="text-danger">*</span> Tipo de Equipaje
+                                </label>
+                                <select class="form-select" id="tipo" name="tipo" required>
+                                    <option value="facturado" {% if equipaje.tipo == 'facturado' %}selected{% endif %}>Facturado</option>
+                                    <option value="mano" {% if equipaje.tipo == 'mano' %}selected{% endif %}>Mano</option>
+                                    <option value="especial" {% if equipaje.tipo == 'especial' %}selected{% endif %}>Especial</option>
+                                    <option value="extraviado" {% if equipaje.tipo == 'extraviado' %}selected{% endif %}>Extraviado</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Etiqueta -->
+                            <div class="col-md-4 mb-3">
+                                <label for="etiqueta" class="form-label">
+                                    Número de Etiqueta
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="etiqueta" 
+                                       name="etiqueta" 
+                                       value="{{ equipaje.etiqueta or '' }}"
+                                       placeholder="Ej: ABC12345">
+                            </div>
+                        </div>
+                        
+                        <!-- Información Adicional -->
+                        <div class="alert alert-light mt-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small>
+                                        <i class="bi bi-bag me-1"></i>
+                                        ID Equipaje: {{ equipaje.id_equipaje }}
+                                    </small>
+                                </div>
+                                <div class="col-md-6">
+                                    <small>
+                                        <i class="bi bi-person me-1"></i>
+                                        Pasajero ID: {{ equipaje.id_pasajero }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('responsable_equipaje') }}" 
+                                       class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>
+                                        Volver al Listado
+                                    </a>
+                                    <div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-save me-1"></i>
+                                            Guardar Cambios
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="card-body">
-                <form method="POST">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="id_pasajero" class="form-label">Pasajero *</label>
-                            <select class="form-control" id="id_pasajero" name="id_pasajero" required>
-                                {% for p in pasajeros %}
-                                <option value="{{ p.id_pasajero }}" 
-                                    {% if equipaje.id_pasajero == p.id_pasajero %}selected{% endif %}>
-                                    {{ p.nombre }} {{ p.apellidos }} ({{ p.pasaporte }})
-                                </option>
-                                {% endfor %}
-                            </select>
+            
+            <!-- Información del Equipaje -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="bi bi-info-square me-2"></i>
+                                Detalles Actuales del Equipaje
+                            </h6>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="id_vuelo" class="form-label">Vuelo</label>
-                            <select class="form-control" id="id_vuelo" name="id_vuelo">
-                                <option value="">Sin vuelo asignado</option>
-                                {% for v in vuelos %}
-                                <option value="{{ v.id_vuelo }}" 
-                                    {% if equipaje.id_vuelo == v.id_vuelo %}selected{% endif %}>
-                                    {{ v.id_vuelo }}: {{ v.origen }} → {{ v.destino }}
-                                </option>
-                                {% endfor %}
-                            </select>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-bag-check fs-1 text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-0">Equipaje #{{ equipaje.id_equipaje }}</h6>
+                                    <small class="text-muted">
+                                        Registrado: {{ equipaje.fecha_registro.strftime('%d/%m/%Y') if equipaje.fecha_registro else 'N/A' }}
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center p-2">
+                                            <small class="text-muted">Tipo</small>
+                                            <div class="fw-bold">{{ equipaje.tipo|title }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center p-2">
+                                            <small class="text-muted">Peso</small>
+                                            <div class="fw-bold">
+                                                {% if equipaje.peso_kg %}
+                                                {{ equipaje.peso_kg }} kg
+                                                {% else %}
+                                                N/A
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Etiqueta:</span>
+                                    <strong>{{ equipaje.etiqueta or 'No asignada' }}</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Pasajero ID:</span>
+                                    <strong>{{ equipaje.id_pasajero }}</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Vuelo ID:</span>
+                                    <strong>{{ equipaje.id_vuelo }}</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Estado:</span>
+                                    <strong>
+                                        {% if equipaje.tipo == 'extraviado' %}
+                                        <span class="badge bg-danger">Extraviado</span>
+                                        {% else %}
+                                        <span class="badge bg-success">Registrado</span>
+                                        {% endif %}
+                                    </strong>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="peso_kg" class="form-label">Peso (kg)</label>
-                            <input type="number" class="form-control" id="peso_kg" name="peso_kg" 
-                                   value="{{ equipaje.peso_kg or '' }}" step="0.1" min="0" max="100">
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                Consideraciones Importantes
+                            </h6>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="tipo" class="form-label">Tipo *</label>
-                            <select class="form-control" id="tipo" name="tipo" required>
-                                <option value="Mano" {% if equipaje.tipo == 'Mano' %}selected{% endif %}>Mano</option>
-                                <option value="Bodega" {% if equipaje.tipo == 'Bodega' %}selected{% endif %}>Bodega</option>
-                            </select>
+                        <div class="card-body">
+                            <div class="alert alert-warning">
+                                <h6><i class="bi bi-shield-exclamation me-2"></i>Advertencia</h6>
+                                <p class="mb-2">Cambiar el tipo a "Extraviado":</p>
+                                <ul class="mb-0">
+                                    <li>Activa protocolos de búsqueda</li>
+                                    <li>Notifica automáticamente al pasajero</li>
+                                    <li>Genera reporte de incidencia</li>
+                                    <li>Puede afectar estadísticas de la aerolínea</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <h6><i class="bi bi-lightbulb me-2"></i>Recomendación</h6>
+                                <p class="mb-0">
+                                    Mantén actualizada la información del equipaje,
+                                    especialmente cuando cambia de vuelo o pasajero.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="etiqueta" class="form-label">Etiqueta</label>
-                            <input type="text" class="form-control" id="etiqueta" name="etiqueta" 
-                                   value="{{ equipaje.etiqueta or '' }}">
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save"></i> Guardar Cambios
-                        </button>
-                        <a href="{{ url_for('responsable_equipaje') }}" class="btn btn-secondary">
-                            <i class="bi bi-x-circle"></i> Cancelar
-                        </a>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
