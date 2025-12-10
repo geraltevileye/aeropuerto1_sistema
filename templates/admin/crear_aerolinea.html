@@ -1,62 +1,109 @@
 {% extends "base.html" %}
-
-{% block title %}Nueva Aerolínea{% endblock %}
-{% block header %}Crear Nueva Aerolínea{% endblock %}
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ url_for('admin_aerolineas') }}">Aerolíneas</a></li>
-    <li class="breadcrumb-item active">Nueva</li>
-{% endblock %}
-
-{% block actions %}
-    <a href="{{ url_for('admin_aerolineas') }}" class="btn btn-secondary">
-        <i class="bi bi-arrow-left"></i> Volver
-    </a>
-{% endblock %}
-
+{% block title %}Crear Aerolínea{% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Información de la Aerolínea</h5>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Crear Nueva Aerolínea
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('crear_aerolinea') }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nombre" class="form-label">
+                                    <span class="text-danger">*</span> Nombre de la Aerolínea
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="nombre" 
+                                       name="nombre" 
+                                       required
+                                       placeholder="Ej: American Airlines, Delta Air Lines">
+                                <div class="form-text">Nombre completo de la aerolínea</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="codigo_IATA" class="form-label">
+                                    Código IATA
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="codigo_IATA" 
+                                       name="codigo_IATA" 
+                                       maxlength="2"
+                                       placeholder="Ej: AA, DL, UA"
+                                       style="text-transform: uppercase;">
+                                <div class="form-text">Código de 2 letras (opcional)</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="pais_origen" class="form-label">
+                                    <span class="text-danger">*</span> País de Origen
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="pais_origen" 
+                                       name="pais_origen" 
+                                       required
+                                       placeholder="Ej: Estados Unidos, España, México">
+                                <div class="form-text">País donde tiene su sede principal</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="fecha_fundacion" class="form-label">
+                                    Fecha de Fundación
+                                </label>
+                                <input type="date" 
+                                       class="form-control" 
+                                       id="fecha_fundacion" 
+                                       name="fecha_fundacion">
+                                <div class="form-text">Fecha de creación (opcional)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('admin_aerolineas') }}" 
+                                       class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>
+                                        Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save me-1"></i>
+                                        Guardar Aerolínea
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="card-body">
-                <form method="POST">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="nombre" class="form-label">Nombre *</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" 
-                                   placeholder="Ej: American Airlines" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="codigo_IATA" class="form-label">Código IATA *</label>
-                            <input type="text" class="form-control" id="codigo_IATA" name="codigo_IATA" 
-                                   placeholder="Ej: AA" maxlength="2" required>
-                            <small class="text-muted">2 letras, ej: AA, DL, UA</small>
-                        </div>
+            
+            <!-- Información adicional -->
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Información Importante
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-exclamation-circle me-2"></i>Notas:</h6>
+                        <ul class="mb-0">
+                            <li>Los campos marcados con <span class="text-danger">*</span> son obligatorios</li>
+                            <li>El código IATA es un código único de 2 letras utilizado internacionalmente</li>
+                            <li>La fecha de fundación es opcional pero recomendada</li>
+                            <li>Después de crear la aerolínea, podrás asignarle vuelos</li>
+                        </ul>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="pais_origen" class="form-label">País de Origen</label>
-                            <input type="text" class="form-control" id="pais_origen" name="pais_origen" 
-                                   placeholder="Ej: Estados Unidos">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="fecha_fundacion" class="form-label">Fecha de Fundación</label>
-                            <input type="date" class="form-control" id="fecha_fundacion" name="fecha_fundacion">
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-check-circle"></i> Crear Aerolínea
-                        </button>
-                        <a href="{{ url_for('admin_aerolineas') }}" class="btn btn-secondary">
-                            <i class="bi bi-x-circle"></i> Cancelar
-                        </a>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
